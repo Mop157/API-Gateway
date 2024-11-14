@@ -6,11 +6,14 @@ const apiR = require('./router/api')
 const cyberR = require('./router/cyber_task')
 const { clasters } = require('./config.json')
 const middleware = require('./middlewares/middlewares')
-let redis;
+const { backupRedisData, restoreRedisData} = require('./Limite_post/backup/backupLimit')
+
 
 if (cluster.isMaster) {
-    const Redis = require('ioredis');
-    redis = new Redis();
+
+    restoreRedisData()
+
+    // setInterval(backupRedisData, 100000);
 
     const numCPUs = 2; 
     console.log(`Запуск кластера с ${numCPUs} воркерами...`);
@@ -47,7 +50,7 @@ if (cluster.isMaster) {
     app.use(express.json());
     app.use("/api/task", middleware.AUTH, tasksR)
     app.use('/api', apiR)
-    app.use('/api/cuber',cyberR)
+    app.use('/api/cuber', cyberR)
 
     if (clasters) setInterval(() => {
         console.log({
@@ -61,5 +64,4 @@ if (cluster.isMaster) {
     });
 }
 
-module.exports = redis
 

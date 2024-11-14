@@ -3,13 +3,14 @@ const permissionService = require('../services/permissionService');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const db = require('../config/database');
-const { Languages } = require('../utils/Languag.json')
+const Languages = require('../utils/Languag.json')
 
 exports.login = async (req, res) => {
-    const { username, password } = req.body;
+    
+    const { username, password, Language } = req.body;
     const user = await User.findByCredentials(username, password);
     if (!user) {
-        return res.status(404).json({ message: 'Incorrect login or password' });
+        return res.status(404).json({ message: Languages['Incorrect login or password'][Language] });
     }
     const token = jwtService.signToken({ id: user.id, permissions: user.permissions });
     db.run(`UPDATE users SET TOKEN = ? WHERE id = ?`, [token, user.id], (err) => {
@@ -18,40 +19,32 @@ exports.login = async (req, res) => {
         }
     })
     res.status(201).json({
-        message: "Please keep it with you for safety",
+        message: Languages['token'][Language],
         token: token,
         id: user.id
      });
 };
 
 exports.verifyAccess = async (req, res) => {
-    const { token, path } = req.body;
+    const { token, path, Language } = req.body;
     const decoded = jwtService.verifyToken(token);
     if (!decoded) {
-        return res.status(401).json({ message: 'Token is invalid' });
+        return res.status(401).json({ message: Languages['Token is invalid'][Language] });
     }
 
     db.get('SELECT id, token FROM users WHERE id = ? AND token = ?', [decoded.id, token], async (err, row) => {
         if (err) {
             console.error(err)
-            return res.status(402).json({ message: 'Token is invalid' });
+            return res.status(402).json({ message: Languages['Token is invalid'][Language] });
         } else if (row) {
             const hasAccess = await permissionService.checkPermission(decoded.permissions, path);
             if (!hasAccess) {
-                return res.status(403).json({ message: 'Access Denied' });
+                return res.status(403).json({ message: Languages['Access Denied'][Language] });
             }
-            res.status(200).json({ message: 'Access granted', id: decoded.id });
+            res.status(200).json({ message: Languages['Access granted'][Language], id: decoded.id });
 
-        } else { return res.status(402).json({ message: "Token is invalid" }); }
+        } else { return res.status(402).json({ message: Languages["Token is invalid"][Language] }); }
     })
-
-    // if (true) {
-    //     const hasAccess = await permissionService.checkPermission(decoded.permissions, path);
-    //     if (!hasAccess) {
-    //         return res.status(403).json({ message: 'Доступ запрещен' });
-    //     }
-    //     res.json({ message: 'Доступ разрешен' });
-    // } else res.status(401).json({ message: 'Токен недействителен' });
 };
 
 exports.register = async (req, res) => {
@@ -61,7 +54,7 @@ exports.register = async (req, res) => {
 
         const existingUser = await User.findByUsernameOrEmail(username, email);
         if (existingUser) {
-            return res.status(401).json({ message: 'A user with that name or email already exists.' });
+            return res.status(401).json({ message: Languages['The user already exists'][Language] });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -76,13 +69,13 @@ exports.register = async (req, res) => {
             }
         })
         res.status(201).json({
-            message: "Please keep it with you for safety",
+            message: Languages["token"][Language],
             token: token,
             id: newUser.id
         });
     } catch {
         res.status(400).json({
-            message: "error while requesting"
+            message: Languages["error while requesting"][Language]
         });
     }
 };

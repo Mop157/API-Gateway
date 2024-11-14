@@ -1,0 +1,32 @@
+{
+    "Token not provided": {
+        "RU": "Токен не предоставлен",
+        "UA": "Токен не надано",
+        "EN": "Token not provided"
+    },
+    "user not found": {
+        "RU": "пользователь не найден",
+        "UA": "користувача не знайдено",
+        "EN": "user not found"
+    },
+    "You have reached your 7 day request limit.": {
+        "RU": "Вы достигли 7-дневного лимита запросов.",
+        "UA": "Ви досягли 7-денного ліміту запитів.",
+        "EN": "You have reached your 7 day request limit."
+    },
+    "Server error checking request limit.": {
+        "RU": "Лимит запросов на проверку ошибок сервера.",
+        "UA": "Ліміт запитів на перевірку помилок сервера.",
+        "EN": "Server error checking request limit."
+    },
+    " ": {
+        "RU": "",
+        "UA": "",
+        "EN": ""
+    },
+    "": {
+        "RU": "",
+        "UA": "",
+        "EN": ""
+    }
+}

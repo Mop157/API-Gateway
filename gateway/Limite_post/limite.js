@@ -1,35 +1,35 @@
-const { redis } = require('../index')
+const Redis = require('ioredis');
+const redis = new Redis();
 const Promise = require('bluebird')
+const Languages = require('../utils/Languag.json')
 
-exports.rateLimiter = async (id) => {
+exports.rateLimiter = async (id, Language) => {
     return new Promise(async (resplve, reject) => {
         
-        if (!id) {
-            reject({ error: 'user not found', status: 404 });
-        }
+        if (!id) return reject({ error: Languages['user not found'][Language], status: 404 })
 
         const requestsKey = `rate_limit_${id}`;
-        const limit = 2; // Максимальное количество запросов за 7 дней
+        const limit = 300; // количество запросов за 7 дней
         const timeWindow = 7 * 24 * 60 * 60; // 7 дней в секундах
 
         try {
-            // Получаем текущее количество запросов из Redis
             const currentRequests = await redis.get(requestsKey);
 
             if (currentRequests && currentRequests >= limit) {
-                reject({ error: 'You have reached your 7 day request limit.', status: 429 });
+                reject({ error: Languages['You have reached your 7 day request limit.'][Language], status: 429 });
             }
 
-            // Увеличиваем счетчик запросов, если он уже существует; в противном случае создаем новый с истечением срока
             await redis.multi()
-                .incr(requestsKey) // Увеличивает счетчик на 1
-                .expire(requestsKey, timeWindow) // Устанавливает срок истечения в 7 дней
+                .incr(requestsKey) // +1
+                .expire(requestsKey, timeWindow) //  7 дней
                 .exec();
 
-            resplve(true) // Продолжаем обработку запроса
+            resplve(true)
         } catch (error) {
             console.error('Ошибка лимита запросов:', error);
-            reject({ error: 'Server error checking request limit.', status: 500 });
+            reject({ error: Languages['Server error checking request limit.'][Language], status: 500 });
         }
     })
 };
+
+exports.redis = redis

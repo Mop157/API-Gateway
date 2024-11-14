@@ -1,21 +1,27 @@
 const axios = require('axios');
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+// const sqlite3 = require('sqlite3').verbose();
+// const path = require('path');
 const auth = require('../controllers/auth')
 const Promise = require('bluebird')
 const { rateLimiter } = require('../Limite_post/limite');
+const Languages = require('../utils/Languag.json')
 
+const Language_all = [
+    "UA", "RU", "EN",
+]
 
 exports.AUTH = ((req, res, next) => {
     const token = req.headers['authorization'];
-    if (!token) {
-        return res.status(401).json({ message: 'Токен не предоставлен' });
-    }
-    auth.authUser(token, "USER")
-    .then(res => rateLimiter(res.id))
+    let Language = req.headers['accept-language'];
+
+    Language ? (!Language_all.includes(Language) ? Language = "EN" : Language) : Language = "EN"
+    if (!token) return res.status(401).json({ message: Languages['Token not provided'][Language] })
+
+    auth.authUser(token, "USER", Language)
+    .then(res => rateLimiter(res.id, Language))
     .then(final => {
-        console.log(final)
         if (final) {
+            req.Language = Language
             next()
         }
     })
@@ -23,7 +29,7 @@ exports.AUTH = ((req, res, next) => {
     
 })
 
-exports.CTLO = ((req, res, next) => {
-    console.log(req.token)
-    next();
-})
+// exports.CTLO = ((req, res, next) => {
+//     console.log(req.token)
+//     next();
+// })
