@@ -1,8 +1,8 @@
-const axios = require('axios');
+// const axios = require('axios');
 // const sqlite3 = require('sqlite3').verbose();
 // const path = require('path');
 const auth = require('../controllers/auth')
-const Promise = require('bluebird')
+// const Promise = require('bluebird')
 const { rateLimiter } = require('../Limite_post/limite');
 const Languages = require('../utils/Languag.json')
 
@@ -12,9 +12,8 @@ const Language_all = [
 
 exports.AUTH = ((req, res, next) => {
     const token = req.headers['authorization'];
-    let Language = req.headers['accept-language'];
+    let Language = !Language_all.includes(req.headers['accept-language']) ? Language = "EN" : Language
 
-    Language ? (!Language_all.includes(Language) ? Language = "EN" : Language) : Language = "EN"
     if (!token) return res.status(401).json({ message: Languages['Token not provided'][Language] })
 
     auth.authUser(token, "USER", Language)

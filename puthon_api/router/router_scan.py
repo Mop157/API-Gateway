@@ -13,7 +13,7 @@ scan_router = Blueprint("api_router", __name__)
 def scanNmap():
     try:
         data = request.json
-        nmap = NmapTool.run_scan(data)
+        nmap = NmapTool.run_scan(data["IP"])
         response = create_response({"status": "success", "data": nmap})
         return jsonify(response[0]), response[1]
     except Exception as e:

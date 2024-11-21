@@ -1,5 +1,5 @@
 const cluster = require('cluster');
-const os = require('os');
+// const os = require('os');
 `
 Worker 19752 status: {
     memoryUsage: {

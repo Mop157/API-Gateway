@@ -1,12 +1,12 @@
 const cluster = require('cluster');
-const os = require('os');
+// const os = require('os');
 const express = require('express');
-const tasksR = require('./router/tasks')
+const compression = require('compression');
+// const tasksR = require('./router/tasks')
 const apiR = require('./router/api')
 const cyberR = require('./router/cyber_task')
-const { clasters } = require('./config.json')
-const middleware = require('./middlewares/middlewares')
-const { backupRedisData, restoreRedisData} = require('./Limite_post/backup/backupLimit')
+// const middleware = require('./middlewares/middlewares')
+const { restoreRedisData} = require('./Limite_post/backup/backupLimit') //  backupRedisData, 
 
 
 if (cluster.isMaster) {
@@ -48,20 +48,12 @@ if (cluster.isMaster) {
     const PORT = 3000;
 
     app.use(express.json());
-    app.use("/api/task", middleware.AUTH, tasksR)
+    app.use(compression())
+    // app.use("/api/task", middleware.AUTH, tasksR)
     app.use('/api', apiR)
-    app.use('/api/cuber', cyberR)
-
-    if (clasters) setInterval(() => {
-        console.log({
-            type: 'status',
-            data: { memoryUsage: process.memoryUsage(), uptime: process.uptime() }
-        })
-    }, 30000);
+    app.use('/api', cyberR)
 
     app.listen(PORT, () => {
         console.log(`запущен воркером ${process.pid} на порту ${PORT}`);
     });
 }
-
-
