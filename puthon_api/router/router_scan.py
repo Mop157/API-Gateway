@@ -13,7 +13,7 @@ scan_router = Blueprint("api_router", __name__)
 def scanNmap():
     try:
         data = request.json
-        nmap = NmapTool.run_scan(data["IP"])
+        nmap = NmapTool.run_scan(data["ip"], data["range"], data["script"])
         response = create_response({"status": "success", "data": nmap})
         return jsonify(response[0]), response[1]
     except Exception as e:
@@ -24,7 +24,7 @@ def scanNmap():
 def scanWhois():
     try:
         data = request.json
-        whois = WhoisTool.get_domain_info(data["IP"])
+        whois = WhoisTool.get_domain_info(data["domain"])
         response = create_response({"status": "success", "data": whois})
         return jsonify(response[0]), response[1]
     except Exception as e:
@@ -36,7 +36,7 @@ def scanWhois():
 def scanPing():
     try:
         data = request.json
-        ping = PingTool.ping(data["IP"])
+        ping = PingTool.ping(data["ip"], data["number"])
         response = create_response({"status": "success", "data": ping})
         return jsonify(response[0]), response[1]
     except Exception as e:

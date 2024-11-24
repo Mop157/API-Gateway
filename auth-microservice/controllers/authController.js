@@ -6,7 +6,6 @@ const db = require('../config/database');
 const Languages = require('../utils/Languag.json')
 
 exports.login = async (req, res) => {
-    
     const { username, password, Language } = req.body;
     const user = await User.findByCredentials(username, password);
     if (!user) {

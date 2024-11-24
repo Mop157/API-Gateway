@@ -19,10 +19,45 @@
         "UA": "Ліміт запитів на перевірку помилок сервера.",
         "EN": "Server error checking request limit."
     },
-    " ": {
-        "RU": "",
-        "UA": "",
-        "EN": ""
+    "The number is not correct": {
+        "RU": "Цифра не корректная",
+        "UA": "Цифра не коректна",
+        "EN": "The number is not correct"
+    },
+    "Invalid IP address or domain": {
+        "RU": "Некорректный IP адрес или домен",
+        "UA": "Некоректна IP-адреса або домен",
+        "EN": "Invalid IP address or domain"
+    },
+    "error: microserver not responding": {
+        "RU": "ошибка: микросервер не отвечает",
+        "UA": "помилка: мікросервер не відповідає",
+        "EN": "error: microserver not responding"
+    },
+    "Invalid domain": {
+        "RU": "Некорректный домен",
+        "UA": "Некоректний домен",
+        "EN": "Invalid domain"
+    },
+    "Incorrect data in the request": {
+        "RU": "Некорректныe данные в запросе",
+        "UA": "Некоректні дані у запиті",
+        "EN": "Incorrect data in the request"
+    },
+    "Incorrect arguments": {
+        "RU": "Некорректные аргументы",
+        "UA": "Некоректні аргументи",
+        "EN": "Incorrect arguments"
+    },
+    "Arguments must be an array.": {
+        "RU": "Аргументы должны быть массивом.",
+        "UA": "Аргументи мають бути масивом.",
+        "EN": "Arguments must be an array."
+    },
+    "Incorrect port list": {
+        "RU": "Некорректный список портов",
+        "UA": "Некоректний список портів",
+        "EN": "Incorrect port list"
     },
     "": {
         "RU": "",

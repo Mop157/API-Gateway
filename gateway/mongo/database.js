@@ -12,6 +12,19 @@ const mongoose = require('mongoose');
 
   const objects = mongoose.model("DynamicObject", new mongoose.Schema({}, { strict: false }));
 
+function removeCircular(obj) {
+    const seen = new WeakSet();
+    return JSON.parse(JSON.stringify(obj, (key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) {
+          return;
+        }
+        seen.add(value);
+      }
+      return value;
+    }));
+  }
+  
 exports.datasave = async (user, server) => {
     try {
       const time = new Date().toISOString()
@@ -19,7 +32,7 @@ exports.datasave = async (user, server) => {
       const data = {
         time: time,
         user: user,
-        server: server
+        server: await removeCircular(server)
       }
       const savedata = new objects(data)
       await savedata.save()

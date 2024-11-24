@@ -2,11 +2,13 @@ const cluster = require('cluster');
 // const os = require('os');
 const express = require('express');
 const compression = require('compression');
+const helmet = require('helmet');
 // const tasksR = require('./router/tasks')
 const apiR = require('./router/api')
 const cyberR = require('./router/cyber_task')
-// const middleware = require('./middlewares/middlewares')
+const middleware = require('./middlewares/middlewares')
 const { restoreRedisData} = require('./Limite_post/backup/backupLimit') //  backupRedisData, 
+const { errorHandler } = require('./middlewares/errorHandler')
 
 
 if (cluster.isMaster) {
@@ -49,9 +51,11 @@ if (cluster.isMaster) {
 
     app.use(express.json());
     app.use(compression())
+    app.use(helmet())
     // app.use("/api/task", middleware.AUTH, tasksR)
     app.use('/api', apiR)
-    app.use('/api', cyberR)
+    app.use('/api', middleware.AUTH, cyberR)
+    app.use(errorHandler)
 
     app.listen(PORT, () => {
         console.log(`запущен воркером ${process.pid} на порту ${PORT}`);

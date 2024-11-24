@@ -4,10 +4,10 @@ import subprocess
 
 class PingTool:
     @staticmethod
-    def ping(ip_address):
+    def ping(ip_address, number):
         try:
             result = subprocess.run(
-                ["ping", "-n", "4", ip_address],
+                ["ping", "-n", str(number), ip_address],
                 capture_output=True,
                 text=True,
                 check=True
@@ -15,3 +15,5 @@ class PingTool:
             return result.stdout
         except subprocess.CalledProcessError as e:
             raise Exception(f"Ping failed: {e.stderr}")
+        except Exception as e:
+            print(f"Произошла ошибка: {e}")

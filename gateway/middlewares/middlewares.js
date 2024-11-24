@@ -12,7 +12,7 @@ const Language_all = [
 
 exports.AUTH = ((req, res, next) => {
     const token = req.headers['authorization'];
-    let Language = !Language_all.includes(req.headers['accept-language']) ? Language = "EN" : Language
+    let Language = !Language_all.includes(req.headers['accept-language']) ? "EN" : req.headers['accept-language']
 
     if (!token) return res.status(401).json({ message: Languages['Token not provided'][Language] })
 
@@ -24,7 +24,7 @@ exports.AUTH = ((req, res, next) => {
             next()
         }
     })
-    .catch(err => res.status(err.status).json(err.error))
+    .catch(err => res.status(err.status).json({ error: err.error}))
     
 })
 
