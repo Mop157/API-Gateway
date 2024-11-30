@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-// const auth = require('../controllers/auth')
 
 const { ping } = require('../tools/net/ping/ping')
 const { whois } = require('../tools/net/whois/whois')

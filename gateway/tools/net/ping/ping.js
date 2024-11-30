@@ -23,7 +23,8 @@ exports.ping = async (req, res) => {
 
     axios.post(URL_cyber + "/api/net/ping/scan", {
         ip: ip,
-        number: number
+        number: number,
+        Language: Language
     }, { headers: { 'Content-Type': 'application/json' } } )
      .then(ress => {
         datasave(req.body, ress.data)

@@ -28,7 +28,6 @@ if (cluster.isMaster) {
 
         });
 
-        // Слушаем сообщения от воркеров
         worker.on('message', (msg) => {
             if (msg.type === 'status') {
                 console.log(`Worker ${worker.process.pid} status:`, msg.data);
@@ -40,7 +39,7 @@ if (cluster.isMaster) {
         newWorker()
     }
 
-    cluster.on('exit', (worker, code, signal) => {
+    cluster.on('exit', (worker) => {
         console.log(`Воркер ${worker.process.pid} завершился. Создаю новый...`);
         newWorker()
     });

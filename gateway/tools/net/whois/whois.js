@@ -21,7 +21,8 @@ exports.whois = async (req, res) => {
     domain = sanitizeHtml(domain);
 
     axios.post(URL_cyber + "/api/net/whois/scan", {
-        domain: domain
+        domain: domain,
+        Language: Language
     }, { headers: { 'Content-Type': 'application/json' } } )
     .then(ress => {
         datasave(req.body, ress.data)

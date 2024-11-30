@@ -1,6 +1,6 @@
 // const cluster = require('cluster');
 // // const os = require('os');
-const validator = require('validator');
+// const validator = require('validator');
 // `
 // Worker 19752 status: {
 //     memoryUsage: {
@@ -97,17 +97,17 @@ const validator = require('validator');
 //     },
 //     script: ""
 // }
-const settingPort = "20,80"
-if (settingPort) {
-    const ports = settingPort.split(',');
-    for (const port of ports) {
-        const trimmedPort = port.trim();
-        if (!validator.isInt(trimmedPort, { min: 1, max: 65535 })) {
-            return res.status(400).json({ error: `Некорректный порт: ${trimmedPort}` });
-        }
-    }
-}
-console.log(settingPort)
+// const settingPort = "20,80"
+// if (settingPort) {
+//     const ports = settingPort.split(',');
+//     for (const port of ports) {
+//         const trimmedPort = port.trim();
+//         if (!validator.isInt(trimmedPort, { min: 1, max: 65535 })) {
+//             return res.status(400).json({ error: `Некорректный порт: ${trimmedPort}` });
+//         }
+//     }
+// }
+// console.log(settingPort)
 
 // {
 //     "ip": "google.com",

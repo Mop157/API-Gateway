@@ -46,10 +46,11 @@ exports.Nmap = async (req, res) => {
             data = {
                 ip,
                 range: scripts[script].port,
-                script: scripts[script].arguments
+                script: scripts[script].arguments,
+                Language: Language
             }
-        } else data = { ip, range: ports.join(","), script: sanitizedArguments.join(" ") }
-    } else data = { ip, range: ports.join(","), script: sanitizedArguments.join(" ") }
+        } else data = { ip, range: ports.join(","), script: sanitizedArguments.join(" "), Language: Language }
+    } else data = { ip, range: ports.join(","), script: sanitizedArguments.join(" "), Language: Language }
 
     axios.post(URL_cyber + "/api/net/Nmap/scan", data, { headers: { 'Content-Type': 'application/json' } } )
     .then(ress => {
