@@ -33,7 +33,7 @@ exports.authUser = async (token, pole, Language) => {
         } else {
             console.error('Ошибка:', error.message);
             return Promise.reject({
-                error: null,
+                error: "сервер не отвечает",
                 status: error.status || 500
             })
         }

@@ -27,8 +27,3 @@ exports.AUTH = ((req, res, next) => {
     .catch(err => res.status(err.status).json({ error: err.error}))
     
 })
-
-// exports.CTLO = ((req, res, next) => {
-//     console.log(req.token)
-//     next();
-// })

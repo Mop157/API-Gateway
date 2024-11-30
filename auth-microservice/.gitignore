@@ -12,3 +12,4 @@ config.json
 *.log
 *.tmp
 .DS_Store
+database.db

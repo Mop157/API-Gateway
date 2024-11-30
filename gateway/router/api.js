@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 const datasave = require('../mongo/database')
+const config = require('../config.json')
 
 router.post('/translate', (req, res) => {
     const { text, translat } = req.body
@@ -47,7 +48,7 @@ router.post('/AI', async (req, res) => {
     const { text } = req.body
     
     
-    const apis = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyDCNnMbnlWDXmVWWT7XUGUNiBpfW7eP3C8', {
+    const apis = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config['API-KEY-AI']}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -73,7 +74,7 @@ router.post('/AI', async (req, res) => {
         post: text,
         error: false
     }
-    await datasave(user, server)
+    datasave(user, server)
      .catch(err => console.error(err))
 
     res.status(202).json(ress)
