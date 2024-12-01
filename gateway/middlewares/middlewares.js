@@ -1,7 +1,7 @@
 // const axios = require('axios');
 // const sqlite3 = require('sqlite3').verbose();
 // const path = require('path');
-const auth = require('../controllers/auth')
+const auth = require('../auth_user/auth')
 // const Promise = require('bluebird')
 const { rateLimiter } = require('../Limite_post/limite');
 const Languages = require('../utils/Languag.json')

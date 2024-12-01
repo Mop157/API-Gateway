@@ -59,6 +59,26 @@
         "UA": "Некоректний список портів",
         "EN": "Incorrect port list"
     },
+    "the server is not responding": {
+        "RU": "сервер не отвечает",
+        "UA": "сервер не відповідає",
+        "EN": "the server is not responding"
+    },
+    "The nickname is too small": {
+        "RU": "Никнейм слишком маленький",
+        "UA": "Нікнейм занадто маленький",
+        "EN": "The nickname is too small"
+    },
+    "Incorrect mail": {
+        "RU": "Некорректная почта",
+        "UA": "Некоректна пошта",
+        "EN": "Incorrect mail"
+    },
+    "(Minimum 8 characters, at least one number, one uppercase and one lowercase letter)": {
+        "RU": "(Минимум 8 символов, как минимум одна цифра, одна заглавная и одна строчная буква)",
+        "UA": "(Мінімум 8 символів, як мінімум одна цифра, одна велика і одна мала літера)",
+        "EN": "(Minimum 8 characters, at least one number, one uppercase and one lowercase letter)"
+    },
     "": {
         "RU": "",
         "UA": "",

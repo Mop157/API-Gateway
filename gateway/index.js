@@ -6,6 +6,7 @@ const helmet = require('helmet');
 // const tasksR = require('./router/tasks')
 const apiR = require('./router/api')
 const cyberR = require('./router/cyber_task')
+const authUser = require('./router/login')
 const middleware = require('./middlewares/middlewares')
 const { restoreRedisData} = require('./Limite_post/backup/backupLimit') //  backupRedisData, 
 const { errorHandler } = require('./middlewares/errorHandler')
@@ -54,6 +55,7 @@ if (cluster.isMaster) {
     // app.use("/api/task", middleware.AUTH, tasksR)
     app.use('/api', apiR)
     app.use('/api', middleware.AUTH, cyberR)
+    app.use('/api', authUser)
     app.use(errorHandler)
 
     app.listen(PORT, () => {

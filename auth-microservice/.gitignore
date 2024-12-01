@@ -3,7 +3,7 @@ node_modules/
 
 # Игнорирование виртуальной среды (для Python)
 venv/
-.env/
+.env
 
 # Игнорирование конфигурационных файлов
 config.json
@@ -12,4 +12,5 @@ config.json
 *.log
 *.tmp
 .DS_Store
-database.db
+config/database.db
+config/database.js
