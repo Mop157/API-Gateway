@@ -12,4 +12,3 @@ config.json
 *.log
 *.tmp
 .DS_Store
-config/
