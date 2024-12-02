@@ -16,7 +16,7 @@ class VirusTotalTool:
             total = Virustotal(API_KEY=Config.api_key_virustul)
             
             response = total.request("urls", method="POST", data={"url": url})
-            analysis_id = response.data["id"]  # Получаем ID анализа
+            analysis_id = response.data["id"] 
 
             # print(f"URL отправлен на сканирование. ID анализа: {analysis_id}")
             
