@@ -1,0 +1,14 @@
+{   
+    "PORT": 3000,
+    "server": true,
+    "AYDIT": false,
+    "clasters": false,
+
+    "BACKUP_FILE": "./Limite_post/backup/backup_limite.json",
+
+    "URL_task": "http://localhost:4100",
+    "URL_cyber": "http://localhost:5000",
+    "URL_auth": "http://localhost:4200",
+
+    "API-KEY-AI": "your api key"
+}
