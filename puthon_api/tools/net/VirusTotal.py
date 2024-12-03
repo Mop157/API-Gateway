@@ -1,7 +1,7 @@
 import virustotal_python
 from virustotal_python import Virustotal
-from config.config import Config
 from base64 import urlsafe_b64encode
+from config.config import api_key_virustul
 
 API_URL = 'https://www.virustotal.com/api/v3/urls'
 
@@ -13,7 +13,7 @@ class VirusTotalTool:
     @staticmethod
     def scan_url(url):
         try:
-            total = Virustotal(API_KEY=Config.api_key_virustul)
+            total = Virustotal(API_KEY=api_key_virustul)
             
             response = total.request("urls", method="POST", data={"url": url})
             analysis_id = response.data["id"] 

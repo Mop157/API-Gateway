@@ -1,14 +1,14 @@
-# Игнорирование папки node_modules
+
 node_modules/
 
-# Игнорирование виртуальной среды (для Python)
 venv/
 .env/
 
-# Игнорирование конфигурационных файлов
 config.json
+private.key
+certificate.crt
+certificate.csr
 
-# Игнорирование логов и временных файлов
 *.log
 *.tmp
 .DS_Store

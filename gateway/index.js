@@ -3,6 +3,10 @@ const cluster = require('cluster');
 const express = require('express');
 const compression = require('compression');
 const helmet = require('helmet');
+const fs = require('fs');
+const https = require('https');
+
+const { PORT, server } = require('./config.json')
 // const tasksR = require('./router/tasks')
 const apiR = require('./router/api')
 const cyberR = require('./router/cyber_task')
@@ -11,6 +15,10 @@ const middleware = require('./middlewares/middlewares')
 const { restoreRedisData} = require('./Limite_post/backup/backupLimit') //  backupRedisData, 
 const { errorHandler } = require('./middlewares/errorHandler')
 
+const options = {
+    key: fs.readFileSync('./certificat/private.key'),
+    cert: fs.readFileSync('./certificat/certificate.crt')
+};
 
 if (cluster.isMaster) {
 
@@ -47,7 +55,6 @@ if (cluster.isMaster) {
 
 } else {
     const app = express();
-    const PORT = 3000;
 
     app.use(express.json());
     app.use(compression())
@@ -58,7 +65,15 @@ if (cluster.isMaster) {
     app.use('/api', authUser)
     app.use(errorHandler)
 
-    app.listen(PORT, () => {
-        console.log(`запущен воркером ${process.pid} на порту ${PORT}`);
-    });
+    
+
+    if (server) {
+        app.listen(PORT, () => {
+            console.log(`запущен воркером ${process.pid} на порту ${PORT}`);
+        });
+    } else {
+        https.createServer(options, app).listen(443, () => {
+            console.log('HTTPS сервер запущен на порту 443');
+        });
+    }
 }
