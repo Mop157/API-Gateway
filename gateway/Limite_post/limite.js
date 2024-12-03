@@ -9,8 +9,8 @@ exports.rateLimiter = async (id, Language) => {
     }
 
     const requestsKey = `rate_limit_${id}`;
-    const limit = 300; // количество запросов за 7 дней
-    const timeWindow = 7 * 24 * 60 * 60; // 7 дней в секундах
+    const limit = 300; //  7 днів
+    const timeWindow = 7 * 24 * 60 * 60; // 7 днів в секундах
 
     try {
         const currentRequests = await redis.get(requestsKey);
@@ -24,12 +24,12 @@ exports.rateLimiter = async (id, Language) => {
 
         await redis.multi()
             .incr(requestsKey) // +1
-            .expire(requestsKey, timeWindow) // 7 дней
+            .expire(requestsKey, timeWindow) // 7 днів
             .exec();
 
         return true;
     } catch (error) {
-        console.error('Ошибка лимита запросов:', error);
+        console.error('Помилка ліміту запитів:', error);
         throw { error: Languages['Server error checking request limit.'][Language], status: 500 };
     }
 };

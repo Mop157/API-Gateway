@@ -3,7 +3,7 @@ exports.errorHandler = (err, req, res, next) => {
 
     res.status(500).json({
         error: {
-            message: err.message || 'Внутренняя ошибка сервера',
+            message: err.message || 'Внутрішня помилка сервера',
             status: err.status || 500,
         }
     });

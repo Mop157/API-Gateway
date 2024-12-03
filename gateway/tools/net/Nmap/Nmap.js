@@ -62,7 +62,7 @@ exports.Nmap = async (req, res) => {
         datasave(req.body, {
             code: err.code,
             message: err.message,
-            response: err.response ? err.response.status : "Нет ответа"
+            response: err.response ? err.response.status : "Нет нічего)"
         })
          .catch(err => console.error(err))
         console.error(err)

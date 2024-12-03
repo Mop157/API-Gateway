@@ -14,4 +14,4 @@ class WhoisTool:
             return result
         except Exception as e:
             print(e)
-            raise Exception(f"Whois lookup failed: {e}")
+            raise Exception(f"Whois ПОМИЛКА: {e}")

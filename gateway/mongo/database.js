@@ -4,9 +4,9 @@ const mongoose = require('mongoose');
     try {
       const uri = 'mongodb://127.0.0.1:27017/GATEWAY';
       await mongoose.connect(uri);
-      console.log('Подключение к MongoDB успешно!');
+      console.log('Підключення до MongoDB успішно!');
     } catch (error) {
-      console.error('Ошибка подключения:', error.message);
+      console.error('Помилка підключення:', error.message);
     }
   })()
 
@@ -38,7 +38,7 @@ exports.datasave = async (user, server) => {
       await savedata.save()
       return
     } catch (err) {
-      console.error("ошибка: " + err)
+      console.error("помилка: " + err)
       throw new Error(err);
       
     }

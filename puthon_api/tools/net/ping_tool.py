@@ -16,4 +16,4 @@ class PingTool:
         except subprocess.CalledProcessError as e:
             raise Exception(f"Ping failed: {e.stderr}")
         except Exception as e:
-            print(f"Произошла ошибка: {e}")
+            print(f"Случилась помилка: {e}")

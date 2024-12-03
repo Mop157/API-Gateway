@@ -69,11 +69,11 @@ if (cluster.isMaster) {
 
     if (server) {
         app.listen(PORT, () => {
-            console.log(`запущен воркером ${process.pid} на порту ${PORT}`);
+            console.log(`запущений воркером ${process.pid} на порту ${PORT}`);
         });
     } else {
         https.createServer(options, app).listen(443, () => {
-            console.log('HTTPS сервер запущен на порту 443');
+            console.log('HTTPS сервер запущений на порту 443');
         });
     }
 }

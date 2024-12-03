@@ -15,4 +15,4 @@ app.use(compression())
 app.use('/auth', authRoutes);
 
 const config = require('./config/config');
-app.listen(config.port, () => console.log(`Auth microservice running on port ${config.port}`));
+app.listen(config.port, () => console.log(`стартует на порту ${config.port}`));

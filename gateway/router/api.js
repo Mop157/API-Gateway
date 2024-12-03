@@ -20,7 +20,7 @@ router.post('/translate', (req, res) => {
     axios.get(`https://api.mymemory.translated.net/get?q=${text}&langpair=${translate}`)
      .then(response => {
         user = {
-            send: "/translate - перевод текста",
+            send: "/translate - перевод слова",
             post: text,
             translate: translate,
             error: false
@@ -30,12 +30,12 @@ router.post('/translate', (req, res) => {
     })
      .catch(error => {
         user = {
-            send: "/translate - перевод текста",
+            send: "/translate - перевод слова",
             post: text,
             translate: translate,
             error: error
         }
-        server = 'ОШИБКА'
+        server = 'ПОМИЛКА'
         console.error('Error:', error);
     })
      .finally(() => datasave(user, server))
@@ -70,7 +70,7 @@ router.post('/AI', async (req, res) => {
 
     const server = ress.candidates[0].content.parts[0].text
     const user= {
-        send: "/ai - чат с ИИ гемини",
+        send: "/ai - чат с ІІ геміні",
         post: text,
         error: false
     }

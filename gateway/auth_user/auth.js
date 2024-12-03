@@ -28,7 +28,7 @@ exports.authUser = async (token, pole, Language) => {
                 status: error.status || 500
             }
         } else { 
-            console.error('Ошибка запроса:', error.request);
+            console.error('помилка запроса:', error.request);
             throw {
                 error: Languages['the server is not responding'][Language],
                 status: error.status || 500
@@ -61,7 +61,7 @@ exports.loginUser = async (req, res) => {
         if (error.response) {
             return res.status(error.status || 500).json({ error: error.response.data })
         } else { 
-            console.error('Ошибка запроса:', error.request);
+            console.error('помилка запроса:', error.request);
             return res.status(error.status || 500).json({ error: Languages['the server is not responding'][Language] })
         }
     }
@@ -106,7 +106,7 @@ exports.registUser = async (req, res) => {
         if (error.response) {
             return res.status(error.status || 500).json({ error: error.response.data })
         } else { 
-            console.error('Ошибка запроса:', error.request);
+            console.error('помилка запроса:', error.request);
             return res.status(error.status || 500).json({ error: Languages['the server is not responding'][Language] })
         }
     }

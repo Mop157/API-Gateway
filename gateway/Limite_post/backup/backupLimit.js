@@ -13,7 +13,7 @@ exports.backupRedisData = async () => {
     }
 
     fs.writeFileSync(BACKUP_FILE, JSON.stringify(data, null, 2), 'utf-8');
-    console.log('Данные Redis успешно сохранены в backup_limite.json');
+    console.log('Дані Redis успішно збережені в backup_limite.json');
 };
 
 exports.restoreRedisData = () => {
@@ -27,8 +27,8 @@ exports.restoreRedisData = () => {
                 redis.expire(key, ttl);
             }
         }
-        console.log('Данные Redis успешно восстановлены из backup_limite.json');
+        console.log('Дані Redis успішно відновлені з backup_limite.json');
     } else {
-        console.log('Файл резервного копирования не найден.');
+        console.log('Файл резервного копіювання не знайдено.');
     }
 };

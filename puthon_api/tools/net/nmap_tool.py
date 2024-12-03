@@ -26,16 +26,15 @@ class NmapTool:
                     for port in sorted(ports):
                         port_data = scanner[host][proto][port]
                         
-                        # Собираем расширенную информацию о каждом порте
                         results[host]["protocols"][proto][port] = {
-                            "state": port_data['state'],           # Состояние порта (open/closed)
-                            "service": port_data.get('name', ''),  # Название сервиса
-                            "version": port_data.get('version', ''),  # Версия сервиса (если доступна)
-                            "product": port_data.get('product', ''),  # Продукт (например, Apache)
-                            "extrainfo": port_data.get('extrainfo', ''),  # Доп. информация о сервисе
-                            "reason": port_data.get('reason', ''),  # Причина статуса (например, syn-ack)
-                            "cpe": port_data.get('cpe', '')         # CPE (Common Platform Enumeration)
+                            "state": port_data['state'],           
+                            "service": port_data.get('name', ''),  
+                            "version": port_data.get('version', ''),  
+                            "product": port_data.get('product', ''),  
+                            "extrainfo": port_data.get('extrainfo', ''), 
+                            "reason": port_data.get('reason', ''),  
+                            "cpe": port_data.get('cpe', '')         
                         }
             return results
         except Exception as e:
-            raise Exception(f"Nmap scan failed: {e}")
+            raise Exception(f"Nmap ПОМИЛКА: {e}")
