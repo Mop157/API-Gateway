@@ -52,7 +52,6 @@ def scanPing():
 def scanVirustotal():
     try:
         data = request.json
-        print(data)
         virustotal = VirusTotalTool.scan_url(data["URL"])
         response = create_response({"status": Languages["success"][request.json['Language']], "data": virustotal})
         return jsonify(response[0]), response[1]

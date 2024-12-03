@@ -17,8 +17,6 @@ class VirusTotalTool:
             
             response = total.request("urls", method="POST", data={"url": url})
             analysis_id = response.data["id"] 
-
-            # print(f"URL отправлен на сканирование. ID анализа: {analysis_id}")
             
             result = total.request(f"analyses/{analysis_id}")
             return result.json()
