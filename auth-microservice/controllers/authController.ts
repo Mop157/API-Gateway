@@ -1,3 +1,4 @@
+import {  } from "../services/jwtService";
 const jwtService = require('../services/jwtService');
 const permissionService = require('../services/permissionService');
 const User = require('../models/User');
