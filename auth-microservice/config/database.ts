@@ -5,16 +5,6 @@ import { open, Database } from 'sqlite';
 
 sqlite3.verbose();
 
-interface User {
-    id?: number;
-    username: string;
-    email: string;
-    password: string;
-    permissions?: string;
-    language?: string;
-    token?: string;
-}
-
 async function initializeDatabase(): Promise<Database<sqlite3.Database, sqlite3.Statement>> {
     const db = await open({
         filename: './config/database.db',
@@ -31,6 +21,6 @@ async function initializeDatabase(): Promise<Database<sqlite3.Database, sqlite3.
         ) `);
     return db;
 }
-const dbPromise = initializeDatabase();
+const dbPromise = await initializeDatabase();
 
 export default dbPromise;

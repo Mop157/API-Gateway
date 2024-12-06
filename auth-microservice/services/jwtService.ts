@@ -1,17 +1,21 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import Config from "../config/config";
 
+const jwtSecret: string = Config.jwtSecret || "123456789"
+
 type JWT = {
-    
+    id: number,
+    permissions: string,
+    Language: string
 }
 
-exports.signToken = (payload): string => {
-    return jwt.sign(payload, Config.jwtSecret || "123456789", { expiresIn: '30d' });
+export const signToken = (payload: JWT): string => {
+    return jwt.sign(payload, jwtSecret, { expiresIn: '30d' });
 };
 
-exports.verifyToken = (token) => {
+export const verifyToken = (token: string): string | JwtPayload | null => {
     try {
-        return jwt.verify(token, config.jwtSecret);
+        return jwt.verify(token, jwtSecret)
     } catch (error) {
         return null;
     }

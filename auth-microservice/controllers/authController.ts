@@ -1,19 +1,33 @@
-import {  } from "../services/jwtService";
-const jwtService = require('../services/jwtService');
-const permissionService = require('../services/permissionService');
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const db = require('../config/database');
-const Languages = require('../utils/Languag.json')
+import bcrypt from "bcryptjs";
+import sqlite3 from 'sqlite3';
+import { Request, Response } from "express";
 
-exports.login = async (req, res) => {
-    const { username, password, Language } = req.body;
-    const user = await User.findByCredentials(username, password);
-    if (!user) {
-        return res.status(404).json({ message: Languages['Incorrect login or password'][Language] });
+import { signToken, verifyToken } from "../services/jwtService";
+import { checkPermission } from "../services/permissionService";
+import User, { user } from '../models/User';
+import db from "../config/database";
+import Languages from "../utils/Languag.json";
+
+interface newRequestbody {
+    username: string
+    password: string
+    Language: string
+    token: string
+    path: string
+}
+
+interface newRequest extends Request {
+    body: newRequestbody
+}
+export const login = async (req: newRequest, res: Response): Promise<void> => {
+    const { username, password, Language }: Pick<newRequestbody, "username" & "password" & "Language"> = req.body;
+    const user: user | Error | null | undefined = await User.findByCredentials(username, password);
+    if (!user || user instanceof Error) {
+        res.status(404).json({ message: Languages['Incorrect login or password'][Language] });
+        return
     }
-    const token = jwtService.signToken({ id: user.id, permissions: user.permissions });
-    db.run(`UPDATE users SET TOKEN = ? WHERE id = ?`, [token, user.id], (err) => {
+    const token = signToken({ id: user.id, permissions: user.permissions, Language: Language });
+    db.run(`UPDATE users SET TOKEN = ? WHERE id = ?`, [token, user.id], (err: Error): void => {
         if (err) {
             console.error(err);
         }
@@ -25,9 +39,9 @@ exports.login = async (req, res) => {
      });
 };
 
-exports.verifyAccess = async (req, res) => {
+exports.verifyAccess = async (req: newRequest, res: Response) => {
     const { token, path, Language } = req.body;
-    const decoded = jwtService.verifyToken(token);
+    const decoded = verifyToken(token);
     if (!decoded) {
         return res.status(401).json({ message: Languages['Token is invalid'][Language] });
     }
@@ -37,7 +51,7 @@ exports.verifyAccess = async (req, res) => {
             console.error(err)
             return res.status(402).json({ message: Languages['Token is invalid'][Language] });
         } else if (row) {
-            const hasAccess = await permissionService.checkPermission(decoded.permissions, path);
+            const hasAccess = await checkPermission(decoded.permissions, path);
             if (!hasAccess) {
                 return res.status(403).json({ message: Languages['Access Denied'][Language] });
             }
@@ -61,7 +75,7 @@ exports.register = async (req, res) => {
 
         const newUser = await User.create(username, email, hashedPassword, Language);
 
-        const token = jwtService.signToken(newUser);
+        const token = signToken(newUser);
         db.run(`UPDATE users SET TOKEN = ? WHERE id = ?`, [token, newUser.id], (err) => {
             if (err) {
                 console.error(err);
