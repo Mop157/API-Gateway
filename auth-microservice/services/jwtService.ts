@@ -13,9 +13,9 @@ export const signToken = (payload: JWT): string => {
     return jwt.sign(payload, jwtSecret, { expiresIn: '30d' });
 };
 
-export const verifyToken = (token: string): string | JwtPayload | null => {
+export const verifyToken = (token: string): JwtPayload | null => {
     try {
-        return jwt.verify(token, jwtSecret)
+        return jwt.verify(token, jwtSecret) as JwtPayload
     } catch (error) {
         return null;
     }

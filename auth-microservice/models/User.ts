@@ -10,6 +10,7 @@ export interface user {
     permissions: string
     Language: string
     token: string
+    path?: string
 }
 
 export default class User {
@@ -26,25 +27,14 @@ export default class User {
         return new Promise<Error | Pick<user, "id" | "permissions" | "Language">>((resolve, reject) => {
             db.run("INSERT INTO users (username, email, password, permissions, Language, TOKEN) VALUES (?, ?, ?, ?, ?)", 
             [username, email, password, pеrmissions, Language, null], 
-            (id: RunResult, err: Error): Error | null | Pick<user, "id" | "permissions" | "Language"> => {
+            (id: RunResult, err: Error): void => {
                 if (err) return reject(err)
-                return resolve({
+                resolve({
                     id: id.lastID,
                     permissions: pеrmissions,
                     Language: Language
                 })
             });
-
-        // return db.run("INSERT INTO users (username, email, password, permissions, Language, TOKEN) VALUES (?, ?, ?, ?, ?)", 
-        //     [username, email, password, pеrmissions, Language, null], 
-        //     (id: RunResult, err: Error): Error | null | Pick<user, "id" | "permissions" | "Language"> => {
-        //         if (err) throw err
-        //         return {
-        //             id: id.lastID,
-        //             permissions: pеrmissions,
-        //             Language: Language
-        //         }
-        //     });
         })
     }
 
