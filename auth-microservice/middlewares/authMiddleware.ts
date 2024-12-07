@@ -1,14 +1,23 @@
-const jwtService = require('../services/jwtService');
+import { NextFunction, Response, Request } from "express";
+import { JwtPayload } from "jsonwebtoken";
 
-module.exports = (req, res, next) => {
-    const token = req.headers['authorization'];
+import { verifyToken } from "../services/jwtService";
+
+interface newRequest extends Request {
+    user?: JwtPayload
+}
+
+export const auth = (req: newRequest, res: Response, next: NextFunction): void => {
+    const token: string | undefined = req.headers['authorization'];
     if (!token) {
-        return res.status(401).json({ message: 'Токен не надано' });
+        res.status(401).json({ message: 'Токен не надано' });
+        return
     }
-    const decoded = jwtService.verifyToken(token);
+    const decoded: JwtPayload | null = verifyToken(token);
     if (!decoded) {
-        return res.status(401).json({ message: 'Неправильний токен' });
+        res.status(401).json({ message: 'Неправильний токен' });
+        return
     }
-    req.user = decoded;
+    req.user = decoded
     next();
 };

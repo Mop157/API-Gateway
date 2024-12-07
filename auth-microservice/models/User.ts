@@ -1,6 +1,7 @@
 import { RunResult } from "sqlite3";
-import db from "../config/database";
 import bcrypt from "bcryptjs";
+
+import db from "../config/database";
 
 export interface user {
     id: number

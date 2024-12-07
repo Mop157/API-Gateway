@@ -1,5 +1,4 @@
 import bcrypt from "bcryptjs";
-import sqlite3 from 'sqlite3';
 import { Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
 
@@ -8,14 +7,6 @@ import { checkPermission } from "../services/permissionService";
 import User, { user } from '../models/User';
 import db from "../config/database";
 import Languages from "../utils/Languag.json";
-
-// interface newRequestbody {
-//     username: string
-//     password: string
-//     Language: string
-//     token: string
-//     path: string
-// }
 
 interface newRequest extends Request {
     body: user
@@ -80,24 +71,26 @@ export const register = async (req: newRequest, res: Response): Promise<void> =>
         const newUser: Error | null | Pick<user, "id" | "permissions" | "Language"> = await User.create(username, email, hashedPassword, Language);
 
         if (!newUser || newUser instanceof Error) {
-            res
+            res.status(505).json({ message: Languages['error while requesting'][Language] })
+            return
         }
 
-        const token = signToken(newUser);
-        db.run(`UPDATE users SET TOKEN = ? WHERE id = ?`, [token, newUser.id], (err) => {
+        const token: string = signToken(newUser);
+        db.run(`UPDATE users SET TOKEN = ? WHERE id = ?`, [token, newUser.id], (err: Error) => {
             if (err) {
                 console.error(err);
                 return res.status(500).json({ message: 'ERROR SERVER' });
+            } else {
+                return res.status(201).json({
+                    message: Languages["token"][Language],
+                    token: token,
+                    id: newUser.id
+                });
             }
         })
-        res.status(201).json({
-            message: Languages["token"][Language],
-            token: token,
-            id: newUser.id
-        });
     } catch {
         res.status(400).json({
-            message: Languages["error while requesting"][Language]
+            message: Languages["error while requesting"]["EN"]
         });
     }
 };

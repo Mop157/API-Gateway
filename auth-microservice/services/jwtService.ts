@@ -1,4 +1,5 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
+
 import Config from "../config/config";
 
 const jwtSecret: string = Config.jwtSecret || "123456789"
