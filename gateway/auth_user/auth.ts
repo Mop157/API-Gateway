@@ -1,14 +1,21 @@
-const axios = require('axios');
-// const Promise = require('bluebird')
-// const Languages = require('../utils/Languag.json')
-const { URL_auth } = require('../config.json')
-const Languages = require('../utils/Languag.json')
+import axios, { AxiosStatic } from "axios";
 
-const Language_all = [
+import { URL_auth } from "../config.json"
+import languages from "../utils/Languag.json";
+
+interface LanguagesType {
+    [key: string]: {
+        [key: string]: string;
+    };
+}
+
+const Languages: LanguagesType = languages
+
+const Language_all: string[] = [
     "UA", "RU", "EN",
 ]
 
-exports.authUser = async (token, pole, Language) => {
+export const authUser = async (token: string, pole: string, Language: string) => {
     try {
         const row = await axios.post(URL_auth + '/auth/verifyAccess', {
             "token": token,
