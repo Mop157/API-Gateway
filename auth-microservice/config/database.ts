@@ -1,8 +1,6 @@
 import sqlite3 from 'sqlite3';
 import { open, Database } from 'sqlite';
 
-// const hashedPassword = bcrypt.hashSync('password', 10);
-
 sqlite3.verbose();
 
 async function initializeDatabase(): Promise<Database<sqlite3.Database, sqlite3.Statement>> {
@@ -21,6 +19,7 @@ async function initializeDatabase(): Promise<Database<sqlite3.Database, sqlite3.
         ) `);
     return db;
 }
-const dbPromise = await initializeDatabase();
 
-export default dbPromise;
+const dbPromise: Promise<Database<sqlite3.Database, sqlite3.Statement>> = initializeDatabase()
+
+export default dbPromise

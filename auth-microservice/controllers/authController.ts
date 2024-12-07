@@ -5,12 +5,21 @@ import { JwtPayload } from "jsonwebtoken";
 import { signToken, verifyToken } from "../services/jwtService";
 import { checkPermission } from "../services/permissionService";
 import User, { user } from '../models/User';
-import db from "../config/database";
-import Languages from "../utils/Languag.json";
+import dbPromise from "../config/database";
+import languages from "../utils/Languag.json";
+
+interface LanguagesType {
+    [key: string]: {
+        [key: string]: string;
+    };
+}
 
 interface newRequest extends Request {
     body: user
 }
+
+const Languages: LanguagesType = languages
+
 export const login = async (req: newRequest, res: Response): Promise<void> => {
     const { username, password, Language }: Pick<user, "username" | "password" | "Language"> = req.body;
     const user: user | Error | null | undefined = await User.findByCredentials(username, password);
@@ -19,6 +28,7 @@ export const login = async (req: newRequest, res: Response): Promise<void> => {
         return
     }
     const token: string = signToken({ id: user.id, permissions: user.permissions, Language: Language });
+    const db = await dbPromise
     db.run(`UPDATE users SET TOKEN = ? WHERE id = ?`, [token, user.id], (err: Error): void => {
         if (err) {
             console.error(err);
@@ -38,7 +48,7 @@ export const verifyAccess = async (req: newRequest, res: Response): Promise<void
         res.status(401).json({ message: Languages['Token is invalid'][Language] });
         return
     }
-
+    const db = await dbPromise
     db.get('SELECT id, token FROM users WHERE id = ? AND token = ?', [decoded.id, token], async (err: Error, row: user | null) => {
         if (err) {
             console.error(err)
@@ -76,6 +86,7 @@ export const register = async (req: newRequest, res: Response): Promise<void> =>
         }
 
         const token: string = signToken(newUser);
+        const db = await dbPromise
         db.run(`UPDATE users SET TOKEN = ? WHERE id = ?`, [token, newUser.id], (err: Error) => {
             if (err) {
                 console.error(err);
