@@ -1,4 +1,4 @@
-{
+const languages: LanguagesType = {
     "Token not provided": {
         "RU": "Токен не предоставлен",
         "UA": "Токен не надано",
@@ -85,3 +85,11 @@
         "EN": ""
     }
 }
+
+interface LanguagesType {
+    [key: string]: {
+        [key: string]: string;
+    };
+}
+
+export default languages

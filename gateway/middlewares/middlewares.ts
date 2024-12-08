@@ -1,23 +1,29 @@
-// const axios = require('axios');
-// const sqlite3 = require('sqlite3').verbose();
-// const path = require('path');
-const auth = require('../auth_user/auth')
-// const Promise = require('bluebird')
-const { rateLimiter } = require('../Limite_post/limite');
-const Languages = require('../utils/Languag.json')
+import { NextFunction, Response, Request } from "express";
+import { authUser } from "../auth_user/auth";
+import { rateLimiter } from "../Limite_post/limite";
+import Languages from "../utils/Languages";
+import { addTransactionSupport } from "ioredis/built/transaction";
+import DataHandler from "ioredis/built/DataHandler";
+import { xDownloadOptions } from "helmet";
 
-const Language_all = [
+const Language_all: string[] = [
     "UA", "RU", "EN",
 ]
 
-exports.AUTH = ((req, res, next) => {
+export const AUTH = ((req: Request, res: Response, next: NextFunction): void => {
     const token = req.headers['authorization'];
-    let Language = !Language_all.includes(req.headers['accept-language']) ? "EN" : req.headers['accept-language']
+    const headers: string = req.headers['accept-language'] ?? "EN"
+    let Language: string = !Language_all.includes(headers) ? "EN" : headers
 
-    if (!token) return res.status(401).json({ message: Languages['Token not provided'][Language] })
+    if (!token) {
+        res.status(401).json({ 
+            message: Languages['Token not provided'][Language]
+        })
+        return
+    }
 
-    auth.authUser(token, "USER", Language)
-    .then(res => rateLimiter(res.id, Language))
+    authUser(token, "USER", Language)
+    .then(ress => rateLimiter(ress.id, Language))
     .then(final => {
         if (final) {
             req.Language = Language

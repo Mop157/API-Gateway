@@ -1,23 +1,38 @@
-import axios, { AxiosStatic } from "axios";
+import axios from "axios";
+import { Request, Response } from "express";
 
 import { URL_auth } from "../config.json"
-import languages from "../utils/Languag.json";
+import Languages from "../utils/Languages";
 
-interface LanguagesType {
-    [key: string]: {
-        [key: string]: string;
-    };
+interface authUser_req {
+    message: string
+    id?: number
+    token?: string
 }
 
-const Languages: LanguagesType = languages
+interface authUser_error {
+    error: authUser_req | string
+    status: number
+}
+
+interface newRequest extends Request {
+    headers: any;
+    body: reqUser
+}
+
+interface reqUser {
+    username?: string
+    email?: string
+    password?: string
+}
 
 const Language_all: string[] = [
     "UA", "RU", "EN",
 ]
 
-export const authUser = async (token: string, pole: string, Language: string) => {
+export const authUser = async (token: string, pole: string, Language: string): Promise<authUser_req | authUser_error> => {
     try {
-        const row = await axios.post(URL_auth + '/auth/verifyAccess', {
+        const row = await axios.post<authUser_req>(URL_auth + '/auth/verifyAccess', {
             "token": token,
             "path": pole,
             "Language": Language
@@ -28,32 +43,36 @@ export const authUser = async (token: string, pole: string, Language: string) =>
         })
         
         return row.data
-    } catch (error) {
+    } catch (error: any) {
         if (error.response) {
             throw {
                 error: error.response.data,
                 status: error.status || 500
-            }
+            } as authUser_error
         } else { 
             console.error('помилка запроса:', error.request);
             throw {
                 error: Languages['the server is not responding'][Language],
                 status: error.status || 500
-            }
+            } as authUser_error
         }
     }
 }
 
-exports.loginUser = async (req, res) => {
-    let Language = !Language_all.includes(req.headers['accept-language']) ? "EN" : req.headers['accept-language']
+export const loginUser = async (req: newRequest, res: Response): Promise<void> => {
+    const headers: string = req.headers.get('accept-language') || "EN"
+    let Language: string = !Language_all.includes(headers) ? "EN" : headers
     try {
-        const { username, password } = req.body
+        const { username, password }: reqUser = req.body
 
-        if (!username || !password) return res.status(400).json({
-            error: Languages["Incorrect data in the request"][Language]
-        })
+        if (!username || !password) {
+            res.status(400).json({
+                error: Languages["Incorrect data in the request"][Language]
+            })
+            return
+        }
 
-        const row = await axios.post(URL_auth + '/auth/login', {
+        const row = await axios.post<authUser_req>(URL_auth + '/auth/login', {
             username: username,
             password: password,
             Language: Language
@@ -63,41 +82,48 @@ exports.loginUser = async (req, res) => {
             }
         })
         
-        return row.data
-    } catch (error) {
+        res.status(200).json(row.data)
+        return
+    } catch (error: any) {
         if (error.response) {
-            return res.status(error.status || 500).json({ error: error.response.data })
+            res.status(error.status || 500).json({ error: error.response.data })
+            return
         } else { 
             console.error('помилка запроса:', error.request);
-            return res.status(error.status || 500).json({ error: Languages['the server is not responding'][Language] })
+            res.status(error.status || 500).json({ error: Languages['the server is not responding'][Language] })
+            return
         }
     }
 }
 
-exports.registUser = async (req, res) => {
-    let Language = !Language_all.includes(req.headers['accept-language']) ? "EN" : req.headers['accept-language']
+export const registUser = async (req: newRequest, res: Response): Promise<void> => {
+    let Language: string = !Language_all.includes(req.headers['accept-language']) ? "EN" : req.headers['accept-language']
     try {
-        const { username, email, password } = req.body
+        const { username, email, password }: reqUser = req.body
 
-        if (!username || !password || !email) return res.status(400).json({
-            error: Languages["Incorrect data in the request"][Language]
-        })
+        if (!username || !password || !email) {
+            res.status(400).json({
+                error: Languages["Incorrect data in the request"][Language]
+            })
+            return
+        } else if (!/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
+            res.status(400).json({
+                error: Languages['(Minimum 8 characters, at least one number, one uppercase and one lowercase letter)'][Language]
+            })
+            return
+        } else if (!/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(email)) {
+            res.status(400).json({
+                error: Languages['Incorrect mail'][Language]
+            })
+            return
+        } else if (username.length < 4) {
+            res.status(400).json({
+                error: Languages['The nickname is too small'][Language]
+            })
+            return
+        }
 
-        const test_password = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)
-        if (!test_password) return res.status(400).json({
-            error: Languages['(Minimum 8 characters, at least one number, one uppercase and one lowercase letter)'][Language]
-        })
-
-        const test_email = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(email)
-        if (!test_email) return res.status(400).json({
-            error: Languages['Incorrect mail'][Language]
-        })
-
-        if (username.length < 4) return res.status(400).json({
-            error: Languages['The nickname is too small'][Language]
-        })
-
-        const row = await axios.post(URL_auth + '/auth/register', {
+        const row = await axios.post<authUser_req>(URL_auth + '/auth/register', {
             username: username,
             password: password,
             email: email,
@@ -108,13 +134,15 @@ exports.registUser = async (req, res) => {
             }
         })
         
-        return row.data
-    } catch (error) {
+        res.status(200).json(row.data)
+    } catch (error: any) {
         if (error.response) {
-            return res.status(error.status || 500).json({ error: error.response.data })
+            res.status(error.status || 500).json({ error: error.response.data })
+            return
         } else { 
             console.error('помилка запроса:', error.request);
-            return res.status(error.status || 500).json({ error: Languages['the server is not responding'][Language] })
+            res.status(error.status || 500).json({ error: Languages['the server is not responding'][Language] })
+            return
         }
     }
 }
