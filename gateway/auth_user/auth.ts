@@ -4,13 +4,13 @@ import { Request, Response } from "express";
 import { URL_auth } from "../config.json"
 import Languages from "../utils/Languages";
 
-interface authUser_req {
+export interface authUser_req {
     message: string
     id?: number
     token?: string
 }
 
-interface authUser_error {
+export interface authUser_error {
     error: authUser_req | string
     status: number
 }
