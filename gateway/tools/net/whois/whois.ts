@@ -1,30 +1,38 @@
-const axios = require('axios');
-const validator = require('validator');
-const sanitizeHtml = require('sanitize-html');
+import axios from 'axios';
+import validator from 'validator';
+import sanitizeHtml from 'sanitize-html';
+import { Request, Response } from "express";
 
-const { datasave } = require('../../../mongo/database')
-const { URL_cyber } = require('../../../config.json');
-const Languages = require('../../../utils/Languag.json')
+import { datasave } from '../../../mongo/database';
+import { URL_cyber } from '../../../config.json';
+import Languages from '../../../utils/Languages';
 
-exports.whois = async (req, res) => {
+interface newRequest extends Request {
+    Language: string
+}
 
-    let { domain } = req.body
+export const whois = async (req: newRequest, res: Response): Promise<void> => {
+
+    let domain: string | undefined = req.body.domain
     const Language = req.Language
 
-    if (!domain) return res.status(400).json({ error: Languages['Incorrect data in the request'][Language]});
+    if (!domain) {
+        res.status(400).json({ error: Languages['Incorrect data in the request'][Language]});
+        return
 
-    if (!validator.isFQDN(domain)) {
+    } else if (!validator.isFQDN(domain)) {
         res.status(400).json({ error: Languages['Invalid domain'][Language]});
-        return;
+        return
+
     }
 
-    domain = sanitizeHtml(domain);
+    // domain = sanitizeHtml(domain);
 
-    axios.post(URL_cyber + "/api/net/whois/scan", {
+    axios.post<any>(URL_cyber + "/api/net/whois/scan", {
         domain: domain,
         Language: Language
     }, { headers: { 'Content-Type': 'application/json' } } )
-    .then(ress => {
+    .then((ress: any) => {
         datasave(req.body, ress.data)
          .catch(err => console.error(err))
         res.status(ress.data.status.status).json(ress.data)

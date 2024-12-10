@@ -1,26 +1,48 @@
-const axios = require('axios');
-const validator = require('validator');
-const sanitizeHtml = require('sanitize-html');
+import axios from 'axios';
+import validator from 'validator';
+import sanitizeHtml from 'sanitize-html';
+import { Request, Response } from "express";
 
-const { datasave } = require('../../../mongo/database')
-const { URL_cyber } = require('../../../config.json');
-const Languages = require('../../../utils/Languag.json')
-const { allowedArguments, scripts} = require('./scripts.json')
+import { datasave } from '../../../mongo/database';
+import { URL_cyber } from '../../../config.json';
+import Languages from '../../../utils/Languages';
+import { allowedArguments, scripts } from './scripts.json';
 
-exports.Nmap = async (req, res) => {
+interface newRequest extends Request {
+    Language: string
+}
 
-    let ip = req.body?.ip ?? null
-    const setting_port = req.body?.setting?.list_port ?? ""
-    const setting_arguments = req.body?.setting?.arguments ?? []
-    const script = req.body?.script ?? ""
+interface Nmap_req {
+    ip?: string | null
+    setting?: {
+        list_port?: string
+        arguments?: string[] | []
+    }
+    script?: string
+}
+
+export const Nmap = async (req: newRequest, res: Response) => {
+
+    const {
+        ip = null,
+        setting: {
+            list_port = "",
+            arguments = []
+        } = {},
+        script = ""
+    }: Nmap_req = req.body
     const Language = req.Language
 
-    if (!(validator.isIP(ip) || validator.isFQDN(ip))) {
+    if (!ip) {
         res.status(400).json({ error: Languages["Invalid IP address or domain"][Language]});
-        return;
+        return
+
+    } else if (!(validator.isIP(ip) || validator.isFQDN(ip))) {
+        res.status(400).json({ error: Languages["Invalid IP address or domain"][Language]});
+        return
     }
 
-    const ports = setting_port.split(',');
+    const ports = list_port.split(',');
     const isValidPorts = ports.every(port => /^\d+$/.test(port) && port >= 0 && port <= 65535);
     if (!isValidPorts) {
         if (!script) return res.status(400).json({ error: Languages["Incorrect port list"][Language] });
@@ -37,7 +59,7 @@ exports.Nmap = async (req, res) => {
 
     const sanitizedArguments = setting_arguments.map(arg => sanitizeHtml(arg));
 
-    ip = sanitizeHtml(ip);
+    // ip = sanitizeHtml(ip);
 
     let data;
 

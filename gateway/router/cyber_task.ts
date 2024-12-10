@@ -1,9 +1,10 @@
-const express = require('express');
-const router = express.Router();
+import express, { Router } from "express";
 
-const { ping } = require('../tools/net/ping/ping')
-const { whois } = require('../tools/net/whois/whois')
-const { Nmap } = require('../tools/net/Nmap/Nmap')
+import { ping } from "../tools/net/ping/ping";
+import { whois } from "../tools/net/whois/whois";
+import {  } from "../tools/net/Nmap/Nmap";
+
+const router: Router = express.Router();
 
 router.post('/net/Nmap/scan', Nmap);
 
