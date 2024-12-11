@@ -26,19 +26,39 @@ export default class User {
 
     static async create(username: string, email: string, password: string, Language: string): Promise<Error | null | Pick<user, "id" | "permissions" | "Language">> {
         const pеrmissions: string = 'USER';
-        const db = await dbPromise
-        return new Promise<Error | Pick<user, "id" | "permissions" | "Language">>((resolve, reject) => {
-            db.run("INSERT INTO users (username, email, password, permissions, Language, TOKEN) VALUES (?, ?, ?, ?, ?)", 
-            [username, email, password, pеrmissions, Language, null], 
-            (id: RunResult, err: Error): void => {
-                if (err) return reject(err)
-                resolve({
-                    id: id.lastID,
-                    permissions: pеrmissions,
-                    Language: Language
+        // const db = await dbPromise
+        let error: Error | undefined;
+        let row: Pick<user, "id" | "permissions" | "Language"> | undefined
+        try {
+            const x = await dbPromise
+             .then(db => {
+                    db.run(
+                        "INSERT INTO users (username, email, password, permissions, Language, TOKEN) VALUES (?, ?, ?, ?, ?, ?)",
+                        [username, email, password, pеrmissions, Language, null],
+                        (err: Error | null) => {
+                            console.log(413414242);
+                            if (err) {
+                                error = err
+                            } else {
+                                row = {
+                                    id: 77,
+                                    permissions: pеrmissions,
+                                    Language: Language
+                                }
+                            }
+                        }
+                    );
                 })
-            });
-        })
+             .catch(err => {
+                    error = err
+                })
+            // await new Promise(resolve => setTimeout(resolve, 2000)); 
+            console.log(x);
+            return row ?? null 
+
+        } catch (err) {
+            throw err
+        }
     }
 
     static async findByCredentials(username: string, password: string): Promise<Error | user | null | undefined> {

@@ -77,26 +77,30 @@ export const register = async (req: newRequest, res: Response): Promise<void> =>
         }
 
         const hashedPassword: string = await bcrypt.hash(password, 10);
-
+        console.log("1")
         const newUser: Error | null | Pick<user, "id" | "permissions" | "Language"> = await User.create(username, email, hashedPassword, Language);
-
+        console.log(2)
+        console.log(newUser)
         if (!newUser || newUser instanceof Error) {
             res.status(505).json({ message: Languages['error while requesting'][Language] })
             return
         }
-
+        console.log(3)
         const token: string = signToken(newUser);
         const db = await dbPromise
+        console.log(4)
         db.run(`UPDATE users SET TOKEN = ? WHERE id = ?`, [token, newUser.id], (err: Error) => {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ message: 'ERROR SERVER' });
+                res.status(500).json({ message: 'ERROR SERVER' });
+                return
             } else {
-                return res.status(201).json({
+                res.status(201).json({
                     message: Languages["token"][Language],
                     token: token,
                     id: newUser.id
                 });
+                return
             }
         })
     } catch {
