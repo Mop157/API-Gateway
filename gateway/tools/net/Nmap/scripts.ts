@@ -1,4 +1,14 @@
-{
+interface Arguments {
+    "allowedArguments": string[];
+    "scripts": {
+        [key: string]: {
+            "port": string;
+            "arguments": string;
+        };
+    }
+}
+
+export const arg: Arguments = {
     "allowedArguments": [
         "-sS", "-sT", "-sU", "-sV", "-sP", "-sN", "-sF", "-sX", "-sA", "-sW", "-sM", "-sL", "-sO", "-sI", "-F", "-r", "-O", "--osscan-guess",
         "--version-intensity 1", "--version-intensity 2", "--version-intensity 3", "--version-intensity 4", "--version-intensity 5", "--version-intensity 6",

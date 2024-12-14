@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 import { datasave } from '../../../mongo/database';
 import { URL_cyber } from '../../../config.json';
 import Languages from '../../../utils/Languages';
-import { allowedArguments, scripts } from './scripts.json';
+import { arg } from './scripts';
 
 interface newRequest extends Request {
     Language: string
@@ -16,18 +16,18 @@ interface Nmap_req {
     ip?: string | null
     setting?: {
         list_port?: string
-        arguments?: string[] | []
+        argument?: string[]
     }
     script?: string
 }
 
-export const Nmap = async (req: newRequest, res: Response) => {
+export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
 
     const {
         ip = null,
         setting: {
             list_port = "",
-            arguments = []
+            argument = []
         } = {},
         script = ""
     }: Nmap_req = req.body
@@ -43,38 +43,51 @@ export const Nmap = async (req: newRequest, res: Response) => {
     }
 
     const ports = list_port.split(',');
-    const isValidPorts = ports.every(port => /^\d+$/.test(port) && port >= 0 && port <= 65535);
+    const isValidPorts = ports.every(port => /^\d+$/.test(port) && Number(port) >= 0 && Number(port) <= 65535);
     if (!isValidPorts) {
-        if (!script) return res.status(400).json({ error: Languages["Incorrect port list"][Language] });
+        if (!script) {
+            res.status(400).json({ error: Languages["Incorrect port list"][Language] });
+            return
+        }
+
+    } else if (!Array.isArray(argument)) {
+        res.status(400).json({ error: Languages['Arguments must be an array.'][Language] });
+        return
+
+    } else if (!argument.every(args => arg.allowedArguments.includes(args))) {
+        if (!script) {
+            res.status(400).json({ error: Languages['Incorrect arguments'][Language] });
+            return
+        }
     }
 
-    if (!Array.isArray(setting_arguments)) {
-        return res.status(400).json({ error: Languages['Arguments must be an array.'][Language] });
-    }
-
-    const isValidArguments = setting_arguments.every(arg => allowedArguments.includes(arg));
-    if (!isValidArguments) {
-        if (!script) return res.status(400).json({ error: Languages['Incorrect arguments'][Language] });
-    }
-
-    const sanitizedArguments = setting_arguments.map(arg => sanitizeHtml(arg));
+    const sanitizedArguments = argument.map(arg => sanitizeHtml(arg));
 
     // ip = sanitizeHtml(ip);
-
     let data;
 
     if (!!script) {
-        if (scripts.hasOwnProperty(script)) {
+        if (arg.scripts.hasOwnProperty(script)) {
             data = {
                 ip,
-                range: scripts[script].port,
-                script: scripts[script].arguments,
+                range: arg.scripts[script].port,
+                script: arg.scripts[script].arguments,
                 Language: Language
             }
-        } else data = { ip, range: ports.join(","), script: sanitizedArguments.join(" "), Language: Language }
-    } else data = { ip, range: ports.join(","), script: sanitizedArguments.join(" "), Language: Language }
+        } else data = {
+            ip,
+            range: ports.join(","),
+            script: sanitizedArguments.join(" "),
+            Language: Language
+        }
+    } else data = {
+        ip,
+        range: ports.join(","),
+        script: sanitizedArguments.join(" "),
+        Language: Language
+    }
 
-    axios.post(URL_cyber + "/api/net/Nmap/scan", data, { headers: { 'Content-Type': 'application/json' } } )
+    axios.post<any>(URL_cyber + "/api/net/Nmap/scan", data, { headers: { 'Content-Type': 'application/json' } } )
     .then(ress => {
         datasave(req.body, ress.data)
          .catch(err => console.error(err))
