@@ -5,7 +5,6 @@ from flask import Blueprint, request, jsonify
 from tools.net.nmap_tool import NmapTool
 from tools.net.whois_tool import WhoisTool
 from tools.net.ping_tool import PingTool
-from tools.net.VirusTotal import VirusTotalTool
 
 from utils.response_util import create_response
 from utils.Languages import Languages
@@ -48,13 +47,3 @@ def scanPing():
         response = create_response({"status": Languages["error"][request.json['Language']], "message": str(e)}, status=500)
         return jsonify(response[0]), response[1]
     
-@scan_router.route("/virustotal/scan", methods=["POST"])
-def scanVirustotal():
-    try:
-        data = request.json
-        virustotal = VirusTotalTool.scan_url(data["URL"])
-        response = create_response({"status": Languages["success"][request.json['Language']], "data": virustotal})
-        return jsonify(response[0]), response[1]
-    except Exception as e:
-        response = create_response({"status": Languages["error"][request.json['Language']], "message": str(e)}, status=500)
-        return jsonify(response[0]), response[1]
