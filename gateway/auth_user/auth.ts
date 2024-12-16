@@ -4,14 +4,14 @@ import { Request, Response } from "express";
 import { URL_auth } from "../config.json"
 import Languages from "../utils/Languages";
 
-export interface authUser_req {
+export interface authUser_res {
     message: string
     id?: number
     token?: string
 }
 
 export interface authUser_error {
-    error: authUser_req | string
+    error: authUser_res | string
     status: number
 }
 
@@ -30,12 +30,12 @@ const Language_all: string[] = [
     "UA", "RU", "EN",
 ]
 
-export const authUser = async (token: string, pole: string, Language: string): Promise<authUser_req | authUser_error> => {
+export const authUser = async (token: string, pole: string, Language: string): Promise<authUser_res | authUser_error> => {
     try {
-        const row = await axios.post<authUser_req>(URL_auth + '/auth/verifyAccess', {
-            "token": token,
-            "path": pole,
-            "Language": Language
+        const row = await axios.post<authUser_res>(URL_auth + '/auth/verifyAccess', {
+            token: token,
+            path: pole,
+            Language: Language
         }, {
             headers: {
                 'Content-Type': 'application/json'
@@ -60,8 +60,7 @@ export const authUser = async (token: string, pole: string, Language: string): P
 }
 
 export const loginUser = async (req: newRequest, res: Response): Promise<void> => {
-    const headers: string = req.headers.get('accept-language') || "EN"
-    let Language: string = !Language_all.includes(headers) ? "EN" : headers
+    let Language: string = !Language_all.includes(req.headers['accept-language']) ? "EN" : req.headers['accept-language']
     try {
         const { username, password }: reqUser = req.body
 
@@ -72,7 +71,7 @@ export const loginUser = async (req: newRequest, res: Response): Promise<void> =
             return
         }
 
-        const row = await axios.post<authUser_req>(URL_auth + '/auth/login', {
+        const row = await axios.post<authUser_res>(URL_auth + '/auth/login', {
             username: username,
             password: password,
             Language: Language
@@ -106,16 +105,19 @@ export const registUser = async (req: newRequest, res: Response): Promise<void> 
                 error: Languages["Incorrect data in the request"][Language]
             })
             return
+
         } else if (!/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
             res.status(400).json({
                 error: Languages['(Minimum 8 characters, at least one number, one uppercase and one lowercase letter)'][Language]
             })
             return
+
         } else if (!/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(email)) {
             res.status(400).json({
                 error: Languages['Incorrect mail'][Language]
             })
             return
+
         } else if (username.length < 4) {
             res.status(400).json({
                 error: Languages['The nickname is too small'][Language]
@@ -123,7 +125,7 @@ export const registUser = async (req: newRequest, res: Response): Promise<void> 
             return
         }
 
-        const row = await axios.post<authUser_req>(URL_auth + '/auth/register', {
+        const row = await axios.post<authUser_res>(URL_auth + '/auth/register', {
             username: username,
             password: password,
             email: email,
@@ -133,12 +135,14 @@ export const registUser = async (req: newRequest, res: Response): Promise<void> 
                 'Content-Type': 'application/json'
             }
         })
-        
         res.status(200).json(row.data)
+
     } catch (error: any) {
+
         if (error.response) {
             res.status(error.status || 500).json({ error: error.response.data })
             return
+
         } else { 
             console.error('помилка запроса:', error.request);
             res.status(error.status || 500).json({ error: Languages['the server is not responding'][Language] })

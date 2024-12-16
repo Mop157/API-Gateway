@@ -1,6 +1,6 @@
 import { NextFunction, Response, Request } from "express";
 
-import { authUser, authUser_req, authUser_error } from "../auth_user/auth";
+import { authUser, authUser_res, authUser_error } from "../auth_user/auth";
 import { rateLimiter } from "../Limite_post/limite";
 import Languages from "../utils/Languages";
 
@@ -25,7 +25,7 @@ export const AUTH = ((req: newRequest, res: Response, next: NextFunction): void 
     }
 
     authUser(token, "USER", Language)
-    .then(ress => rateLimiter((ress as authUser_req).id, Language))
+    .then(ress => rateLimiter((ress as authUser_res).id, Language))
     .then(final => {
         if (final) {
             req.Language = Language

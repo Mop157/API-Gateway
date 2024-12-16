@@ -57,7 +57,7 @@ if (cluster.isMaster) {
     app.use(compression())
     app.use(helmet())
 
-    app.use('/api', AUTH, cyberR)
+    app.use('/api/net', AUTH, cyberR)
     app.use('/api', authUser)
     
     app.use(errorHandler)
