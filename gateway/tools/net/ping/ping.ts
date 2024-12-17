@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
-import axios from "axios";
 
-import { datasave } from "../../../mongo/database";
 import { URL_cyber } from "../../../config.json";
 import Languages from "../../../utils/Languages";
+import { microserverRequest } from "../../../utils/axios_POST";
 import { Validator, ValidationError } from '../../../validators/validators';
 
 interface newRequest extends Request {
@@ -24,12 +23,6 @@ interface ping_res {
     }
 }
 
-interface ping_Error extends Error {
-    code: string
-    message: string
-    response: ping_res | undefined;
-}
-
 export const ping = async (req: newRequest, res: Response): Promise<void> => {
     const Language = req.Language
     try {
@@ -43,27 +36,17 @@ export const ping = async (req: newRequest, res: Response): Promise<void> => {
             Validator.ipdomainerror(target)
         ])
 
-        axios.post<ping_res>(URL_cyber + "/api/net/ping/scan", {
-            ip: target,
-            number: number,
-            Language: Language
-        }, { headers: { 'Content-Type': 'application/json' } } )
-        .then(ress => {
-            datasave(req.body, ress.data)
-            .catch(err => console.error(err))
-            res.status(ress.data.status.status).json(ress.data)
-        })
-        .catch((err: ping_Error) => {
-            if (!err?.response) console.error(err)
-            datasave(req.body, {
-                code: err?.code,
-                message: err?.message,
-                response: err?.response ? err.response : "Нет ответа"
-            })
-            .catch(err => console.error(err))
-            res.status(500).json({ error: Languages["error: microserver not responding"][Language]})
-        })
-        
+        const row = await microserverRequest<ping_res>(
+            URL_cyber + "/api/net/ping/scan",
+            {
+                ip: target,
+                number: number,
+                Language: Language
+            }
+        ) as ping_res
+
+        res.status(row.status.status).json(row)
+
     } catch (err: any) {
         if (err?.status) {
             res.status(err.status).json({ error: Languages[err.message][Language]})

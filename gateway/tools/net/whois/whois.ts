@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { datasave } from '../../../mongo/database';
 import { URL_cyber } from '../../../config.json';
 import Languages from '../../../utils/Languages';
+import { microserverRequest } from "../../../utils/axios_POST";
 import { Validator, ValidationError } from '../../../validators/validators';
 
 interface newRequest extends Request {
@@ -58,25 +59,15 @@ export const whois = async (req: newRequest, res: Response): Promise<void> => {
             Validator.ipdomainerror(target)
                 ])
 
-        axios.post<whois_res>(URL_cyber + "/api/net/whois/scan", {
-            domain: target,
-            Language: Language
-        }, { headers: { 'Content-Type': 'application/json' } } )
-        .then(ress => {
-            datasave(req.body, ress.data)
-            .catch(err => console.error(err))
-            res.status(ress.data.status.status).json(ress.data)
-        })
-        .catch((err: whois_Error) => {
-            if (!err?.response) console.error(err)
-            datasave(req.body, {
-                code: err?.code,
-                message: err?.message,
-                response: err?.response ? err.response : "Нет ответа"
-            })
-            .catch(err => console.error(err))
-            res.status(500).json({ error: Languages["error: microserver not responding"][Language]})
-        })
+        const row = await microserverRequest<whois_res>(
+                URL_cyber + "/api/net/whois/scan",
+                {
+                    domain: target,
+                    Language: Language
+                }
+            ) as whois_res
+    
+        res.status(row.status.status).json(row)
         
     } catch (err: any) {
         if (err?.status) {

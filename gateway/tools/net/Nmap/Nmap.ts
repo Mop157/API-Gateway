@@ -1,9 +1,8 @@
-import axios from 'axios';
 import { Request, Response } from "express";
 
-import { datasave } from '../../../mongo/database';
 import { URL_cyber } from '../../../config.json';
 import Languages from '../../../utils/Languages';
+import { microserverRequest } from "../../../utils/axios_POST";
 import { arg } from './scripts';
 import { Validator, ValidationError } from '../../../validators/validators';
 
@@ -47,12 +46,12 @@ interface Nmap_req {
     script?: string
 }
 
-interface data_script {
-    ip: string
-    range: string
-    script: string
-    Language: string
-}
+// interface data_script {
+//     ip: string
+//     range: string
+//     script: string
+//     Language: string
+// }
 
 export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
     const Language = req.Language
@@ -81,12 +80,17 @@ export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
                 Validator.duplicateargumenterror(argument)
             ])
 
-            request({
-                ip,
-                range: ports.join(","),
-                script: argument.join(" "),
-                Language: Language
-            })
+            const row = await microserverRequest<Nmap_res>(
+                URL_cyber + "/api/net/Nmap/scan",
+                {
+                    ip,
+                    range: ports.join(","),
+                    script: argument.join(" "),
+                    Language: Language
+                }
+                ) as Nmap_res
+                
+            res.status(row.status.status).json(row)
             return
 
         } else {
@@ -97,34 +101,20 @@ export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
                 ])
 
             if (arg.scripts.hasOwnProperty(script)) {
-                request({
-                    ip,
-                    range: arg.scripts[script].port,
-                    script: arg.scripts[script].arguments,
-                    Language: Language
-                    })
+                const row = await microserverRequest<Nmap_res>(
+                    URL_cyber + "/api/net/Nmap/scan",
+                    {
+                        ip,
+                        range: arg.scripts[script].port,
+                        script: arg.scripts[script].arguments,
+                        Language: Language
+                    }
+                    ) as Nmap_res
+                    
+                res.status(row.status.status).json(row)
                 return
                 } else throw new ValidationError(400, "Script does not exist. Please enter a valid script.")
             }
-
-        function request(data: data_script): void {
-            axios.post<Nmap_res>(URL_cyber + "/api/net/Nmap/scan", data, { headers: { 'Content-Type': 'application/json' } } )
-            .then(ress => {
-                datasave(req.body, ress.data)
-                .catch(err => console.error(err))
-                res.status(ress.data.status.status).json(ress.data)
-            })
-            .catch(err => {
-                datasave(req.body, {
-                    code: err.code,
-                    message: err.message,
-                    response: err.response ? err.response.status : "Нет нічего)"
-                })
-                .catch(err => console.error(err))
-                console.error(err)
-                res.status(500).json({ error: Languages["error: microserver not responding"][Language]})
-            })
-        }
 
     } catch (err: any) {
         if (err?.status) {
