@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { datasave } from '../../../mongo/database';
 import { URL_cyber } from '../../../config.json';
 import Languages from '../../../utils/Languages';
-import { html, ipdomainerror, ValidationError } from '../../../validators/validators';
+import { Validator, ValidationError } from '../../../validators/validators';
 
 interface newRequest extends Request {
     Language: string
@@ -54,8 +54,8 @@ export const whois = async (req: newRequest, res: Response): Promise<void> => {
         if (!target) throw new ValidationError(400, "Incorrect data in the request")
             
         await Promise.all([
-                    html(target),
-                    ipdomainerror(target)
+            Validator.html(target),
+            Validator.ipdomainerror(target)
                 ])
 
         axios.post<whois_res>(URL_cyber + "/api/net/whois/scan", {

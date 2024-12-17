@@ -4,7 +4,7 @@ import axios from "axios";
 import { datasave } from "../../../mongo/database";
 import { URL_cyber } from "../../../config.json";
 import Languages from "../../../utils/Languages";
-import { html, numbererror, ipdomainerror, ValidationError } from '../../../validators/validators';
+import { Validator, ValidationError } from '../../../validators/validators';
 
 interface newRequest extends Request {
     Language: string
@@ -38,11 +38,10 @@ export const ping = async (req: newRequest, res: Response): Promise<void> => {
         if (!target || !number) throw new ValidationError(400, "Incorrect data in the request")
 
         await Promise.all([
-            html(target),
-            numbererror(number, 0, 10),
-            ipdomainerror(target)
+            Validator.html(target),
+            Validator.numbererror(number, 0, 10),
+            Validator.ipdomainerror(target)
         ])
-        // console.log(row)
 
         axios.post<ping_res>(URL_cyber + "/api/net/ping/scan", {
             ip: target,

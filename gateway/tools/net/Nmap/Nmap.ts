@@ -5,9 +5,7 @@ import { datasave } from '../../../mongo/database';
 import { URL_cyber } from '../../../config.json';
 import Languages from '../../../utils/Languages';
 import { arg } from './scripts';
-import { html, ipdomainerror, ValidationError, portserror,
-    duplicateportserror, isArrayerrorerror, in_argumentserror,
-    duplicateargumenterror } from '../../../validators/validators';
+import { Validator, ValidationError } from '../../../validators/validators';
 
 interface newRequest extends Request {
     Language: string
@@ -74,13 +72,13 @@ export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
             const ports = list_port.split(',');
 
             await Promise.all([
-                html(ip),
-                ipdomainerror(ip),
-                portserror(ports),
-                duplicateportserror(ports),
-                isArrayerrorerror(argument),
-                in_argumentserror(argument),
-                duplicateargumenterror(argument)
+                Validator.html(ip),
+                Validator.ipdomainerror(ip),
+                Validator.portserror(ports),
+                Validator.duplicateportserror(ports),
+                Validator.isArrayerrorerror(argument),
+                Validator.in_argumentserror(argument),
+                Validator.duplicateargumenterror(argument)
             ])
 
             request({
@@ -94,8 +92,8 @@ export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
         } else {
 
             await Promise.all([
-                    html(ip),
-                    ipdomainerror(ip)
+                Validator.html(ip),
+                Validator.ipdomainerror(ip)
                 ])
 
             if (arg.scripts.hasOwnProperty(script)) {
