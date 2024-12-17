@@ -34,10 +34,10 @@ const languages: LanguagesType = {
         "UA": "Помилка: мікросервер не відповідає",
         "EN": "Error: microserver not responding"
     },
-    "Invalid domain": {
-        "RU": "Некорректный домен",
-        "UA": "Некоректний домен",
-        "EN": "Invalid domain"
+    "error: internal server error": {
+        "RU": "ошибка: внутренняя ошибка сервера",
+        "UA": "помилка: внутрішня помилка сервера",
+        "EN": "error: internal server error"
     },
     "Incorrect data in the request": {
         "RU": "Некорректныe данные в запросе",

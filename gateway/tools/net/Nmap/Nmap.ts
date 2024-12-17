@@ -1,15 +1,43 @@
 import axios from 'axios';
-import validator from 'validator';
-import sanitizeHtml from 'sanitize-html';
 import { Request, Response } from "express";
 
 import { datasave } from '../../../mongo/database';
 import { URL_cyber } from '../../../config.json';
 import Languages from '../../../utils/Languages';
 import { arg } from './scripts';
+import { html, ipdomainerror, ValidationError, portserror,
+    duplicateportserror, isArrayerrorerror, in_argumentserror,
+    duplicateargumenterror } from '../../../validators/validators';
 
 interface newRequest extends Request {
     Language: string
+}
+
+interface Nmap_res {
+    data: {
+      [key: string]: {
+        hostname?: string,
+        protocols?: {
+            [key: string]: {
+                [key: string]: {
+                    cpe?: string
+                    extrainfo?: string
+                    product?: string
+                    reason?: string
+                    service?: string
+                    state?: string
+                    version?: string
+                }
+            }
+        },
+        state?: string
+      }
+    }
+    message: string | null
+    status: {
+      message: string
+      status: number
+    }
 }
 
 interface Nmap_req {
@@ -21,7 +49,15 @@ interface Nmap_req {
     script?: string
 }
 
+interface data_script {
+    ip: string
+    range: string
+    script: string
+    Language: string
+}
+
 export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
+    const Language = req.Language
     try {
         const {
             ip = null,
@@ -31,45 +67,21 @@ export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
             } = {},
             script = ""
         }: Nmap_req = req.body
-        const Language = req.Language
-        const html = (target: string): boolean => {
-            if (sanitizeHtml(target) == target) return false
-            else return true
-            }
 
-        if (script) {
+        if (!ip) throw new ValidationError(400, "Invalid IP address or domain")
 
-            if (!ip) {
-                res.status(400).json({ error: Languages["Invalid IP address or domain"][Language]});
-                return
-
-            } else if (!(validator.isIP(ip) || validator.isFQDN(ip)) || html(ip)) {
-                res.status(400).json({ error: Languages["Invalid IP address or domain"][Language]});
-                return
-            }
-
+        else if (!script) {
             const ports = list_port.split(',');
-            const isValidPorts = ports.every(port => /^\d+$/.test(port) && Number(port) >= 0 && Number(port) <= 65535);
-            if (!isValidPorts) {
-                res.status(400).json({ error: Languages["Incorrect port list"][Language] });
-                return
-                
-            } else if ([...new Set(ports)].length !== ports.length) {
-                res.status(400).json({ error: Languages["Duplicate ports were found in your ports, please remove them."][Language] });
-                return
-                
-            } else if (!Array.isArray(argument)) {
-                res.status(400).json({ error: Languages['Arguments must be an array.'][Language] });
-                return
 
-            } else if (!argument.every(args => arg.allowedArguments.includes(args))) {
-                res.status(400).json({ error: Languages['Incorrect arguments'][Language] });
-                return
-
-            } else  if ([...new Set(argument)].length !== argument.length) {
-                res.status(400).json({ error: Languages["There are duplicates in your arguments, please remove them."][Language] });
-                return  
-            }
+            await Promise.all([
+                html(ip),
+                ipdomainerror(ip),
+                portserror(ports),
+                duplicateportserror(ports),
+                isArrayerrorerror(argument),
+                in_argumentserror(argument),
+                duplicateargumenterror(argument)
+            ])
 
             request({
                 ip,
@@ -81,18 +93,10 @@ export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
 
         } else {
 
-            if (!ip) {
-                res.status(400).json({ error: Languages["Invalid IP address or domain"][Language]});
-                return
-
-            } else if (!(validator.isIP(ip) || validator.isFQDN(ip)) || html(ip)) {
-                res.status(400).json({ error: Languages["Invalid IP address or domain"][Language]});
-                return
-
-            } else if (html(script)) {
-                res.status(400).json({ error: Languages["Error in script. Please make sure everything is entered correctly."][Language]});
-                return
-            }
+            await Promise.all([
+                    html(ip),
+                    ipdomainerror(ip)
+                ])
 
             if (arg.scripts.hasOwnProperty(script)) {
                 request({
@@ -102,15 +106,11 @@ export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
                     Language: Language
                     })
                 return
-                } else {
-                    res.status(400).json({ error: Languages["Script does not exist. Please enter a valid script."][Language] });
-                    return
-                }
-            
-        }
+                } else throw new ValidationError(400, "Script does not exist. Please enter a valid script.")
+            }
 
-        function request(data: any): void {
-            axios.post<any>(URL_cyber + "/api/net/Nmap/scan", data, { headers: { 'Content-Type': 'application/json' } } )
+        function request(data: data_script): void {
+            axios.post<Nmap_res>(URL_cyber + "/api/net/Nmap/scan", data, { headers: { 'Content-Type': 'application/json' } } )
             .then(ress => {
                 datasave(req.body, ress.data)
                 .catch(err => console.error(err))
@@ -128,8 +128,12 @@ export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
             })
         }
 
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({ error: Languages["error: internal server error"][req.Language]})
+    } catch (err: any) {
+        if (err?.status) {
+            res.status(err.status).json({ error: Languages[err.message][Language]})
+        } else {
+            console.error(err)
+            res.status(500).json({ error: Languages["error: internal server error"][Language]})
+        }
     }
 }
