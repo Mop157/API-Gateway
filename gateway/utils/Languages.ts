@@ -1,3 +1,7 @@
+export const Language_all: string[] = [
+    "UA", "RU", "EN",
+]
+
 const languages: LanguagesType = {
     "Token not provided": {
         "RU": "Токен не предоставлен",

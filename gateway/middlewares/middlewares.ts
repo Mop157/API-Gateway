@@ -2,11 +2,7 @@ import { NextFunction, Response, Request } from "express";
 
 import { authUser, authUser_res, authUser_error } from "../auth_user/auth";
 import { rateLimiter } from "../Limite_post/limite";
-import Languages from "../utils/Languages";
-
-const Language_all: string[] = [
-    "UA", "RU", "EN",
-]
+import Languages, {Language_all} from "../utils/Languages";
 
 interface newRequest extends Request {
     Language?: string

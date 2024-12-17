@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 
 import { URL_auth } from "../config.json"
 import Languages from "../utils/Languages";
+import { Validator, ValidationError } from "../validators/validators";
 
 export interface authUser_res {
     message: string
@@ -60,16 +61,13 @@ export const authUser = async (token: string, pole: string, Language: string): P
 }
 
 export const loginUser = async (req: newRequest, res: Response): Promise<void> => {
-    let Language: string = !Language_all.includes(req.headers['accept-language']) ? "EN" : req.headers['accept-language']
+    let Language: string = await Validator.Languageerror(req.headers['accept-language']) ? req.headers['accept-language'] : "EN" 
     try {
         const { username, password }: reqUser = req.body
 
-        if (!username || !password) {
-            res.status(400).json({
-                error: Languages["Incorrect data in the request"][Language]
-            })
-            return
-        }
+        if (!username || !password) throw new ValidationError(400, "Incorrect data in the request")
+
+        await Validator.usernloginerror(username, password)
 
         const row = await axios.post<authUser_res>(URL_auth + '/auth/login', {
             username: username,
@@ -84,9 +82,10 @@ export const loginUser = async (req: newRequest, res: Response): Promise<void> =
         res.status(200).json(row.data)
         return
     } catch (error: any) {
-        if (error.response) {
-            res.status(error.status || 500).json({ error: error.response.data })
+        if (error?.status) {
+            res.status(error.status).json({ error: Languages[error.message][Language]})
             return
+
         } else { 
             console.error('помилка запроса:', error.request);
             res.status(error.status || 500).json({ error: Languages['the server is not responding'][Language] })
@@ -96,34 +95,18 @@ export const loginUser = async (req: newRequest, res: Response): Promise<void> =
 }
 
 export const registUser = async (req: newRequest, res: Response): Promise<void> => {
-    let Language: string = !Language_all.includes(req.headers['accept-language']) ? "EN" : req.headers['accept-language']
+    let Language: string = await Validator.Languageerror(req.headers['accept-language']) ? req.headers['accept-language'] : "EN" 
     try {
         const { username, email, password }: reqUser = req.body
 
-        if (!username || !password || !email) {
-            res.status(400).json({
-                error: Languages["Incorrect data in the request"][Language]
-            })
-            return
+        if (!username || !password || !email) throw new ValidationError(400, "Incorrect data in the request")
 
-        } else if (!/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
-            res.status(400).json({
-                error: Languages['(Minimum 8 characters, at least one number, one uppercase and one lowercase letter)'][Language]
-            })
-            return
-
-        } else if (!/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(email)) {
-            res.status(400).json({
-                error: Languages['Incorrect mail'][Language]
-            })
-            return
-
-        } else if (username.length < 4) {
-            res.status(400).json({
-                error: Languages['The nickname is too small'][Language]
-            })
-            return
-        }
+        await Promise.all([
+            Validator.usernloginerror(username, password, email),
+            Validator.passworderror(password),
+            Validator.emailerror(email),
+            Validator.usernamelengtherror(username)
+        ])
 
         const row = await axios.post<authUser_res>(URL_auth + '/auth/register', {
             username: username,
@@ -139,8 +122,8 @@ export const registUser = async (req: newRequest, res: Response): Promise<void> 
 
     } catch (error: any) {
 
-        if (error.response) {
-            res.status(error.status || 500).json({ error: error.response.data })
+        if (error?.status) {
+            res.status(error.status).json({ error: Languages[error.message][Language]})
             return
 
         } else { 
