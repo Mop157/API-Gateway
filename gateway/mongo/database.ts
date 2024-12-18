@@ -1,18 +1,20 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-(async () => {
+(async (): Promise<void> => {
     try {
-      const uri = 'mongodb://127.0.0.1:27017/GATEWAY';
+      const uri: string = 'mongodb://127.0.0.1:27017/GATEWAY';
       await mongoose.connect(uri);
       console.log('Підключення до MongoDB успішно!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Помилка підключення:', error.message);
     }
   })()
 
   const objects = mongoose.model("DynamicObject", new mongoose.Schema({}, { strict: false }));
 
-function removeCircular(obj) {
+
+// когда нибуть типизивую, главное не забыть!
+function removeCircular(obj: any): any {
     const seen = new WeakSet();
     return JSON.parse(JSON.stringify(obj, (key, value) => {
       if (typeof value === 'object' && value !== null) {
@@ -25,7 +27,7 @@ function removeCircular(obj) {
     }));
   }
   
-exports.datasave = async (user, server) => {
+export const datasave = async (user: any, server: any): Promise<any> => {
     try {
       const time = new Date().toISOString()
 
@@ -37,9 +39,9 @@ exports.datasave = async (user, server) => {
       const savedata = new objects(data)
       await savedata.save()
       return
-    } catch (err) {
+    } catch (err: any) {
       console.error("помилка: " + err)
-      throw new Error(err);
+      throw err;
       
     }
   }

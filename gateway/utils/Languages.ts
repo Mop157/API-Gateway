@@ -1,13 +1,17 @@
-{
+export const Language_all: string[] = [
+    "UA", "RU", "EN",
+]
+
+const languages: LanguagesType = {
     "Token not provided": {
         "RU": "Токен не предоставлен",
         "UA": "Токен не надано",
         "EN": "Token not provided"
     },
     "user not found": {
-        "RU": "пользователь не найден",
-        "UA": "користувача не знайдено",
-        "EN": "user not found"
+        "RU": "Пользователь не найден",
+        "UA": "Користувача не знайдено",
+        "EN": "User not found"
     },
     "You have reached your 7 day request limit.": {
         "RU": "Вы достигли 7-дневного лимита запросов.",
@@ -30,14 +34,14 @@
         "EN": "Invalid IP address or domain"
     },
     "error: microserver not responding": {
-        "RU": "ошибка: микросервер не отвечает",
-        "UA": "помилка: мікросервер не відповідає",
-        "EN": "error: microserver not responding"
+        "RU": "Ошибка: микросервер не отвечает",
+        "UA": "Помилка: мікросервер не відповідає",
+        "EN": "Error: microserver not responding"
     },
-    "Invalid domain": {
-        "RU": "Некорректный домен",
-        "UA": "Некоректний домен",
-        "EN": "Invalid domain"
+    "error: internal server error": {
+        "RU": "ошибка: внутренняя ошибка сервера",
+        "UA": "помилка: внутрішня помилка сервера",
+        "EN": "error: internal server error"
     },
     "Incorrect data in the request": {
         "RU": "Некорректныe данные в запросе",
@@ -54,15 +58,25 @@
         "UA": "Аргументи мають бути масивом.",
         "EN": "Arguments must be an array."
     },
+    "There are duplicates in your arguments, please remove them.": {
+        "RU": "В ваших аргументах обнаружены дубликаты, пожалуйста, удалите их.",
+        "UA": "У ваших аргументах виявлені дублікати, будь ласка, видаліть їх.",
+        "EN": "There are duplicates in your arguments, please remove them."
+    },
     "Incorrect port list": {
         "RU": "Некорректный список портов",
         "UA": "Некоректний список портів",
         "EN": "Incorrect port list"
     },
+    "Duplicate ports were found in your ports, please remove them.": {
+        "RU": "В ваших портах обнаружены дубликаты, пожалуйста, удалите их.",
+        "UA": "У ваших портах виявлені дублікати, будь ласка, видаліть їх.",
+        "EN": "Duplicate ports were found in your ports, please remove them."
+    },
     "the server is not responding": {
-        "RU": "сервер не отвечает",
-        "UA": "сервер не відповідає",
-        "EN": "the server is not responding"
+        "RU": "Сервер не отвечает",
+        "UA": "Сервер не відповідає",
+        "EN": "The server is not responding"
     },
     "The nickname is too small": {
         "RU": "Никнейм слишком маленький",
@@ -79,9 +93,27 @@
         "UA": "(Мінімум 8 символів, як мінімум одна цифра, одна велика і одна мала літера)",
         "EN": "(Minimum 8 characters, at least one number, one uppercase and one lowercase letter)"
     },
+    "Error in script. Please make sure everything is entered correctly.": {
+        "RU": "Ошибка в скрипте. Пожалуйста, убедитесь, что все введено верно.",
+        "UA": "Помилка у скрипті. Будь ласка, переконайтеся, що все введено правильно.",
+        "EN": "Error in script. Please make sure everything is entered correctly."
+    },
+    "Script does not exist. Please enter a valid script.": {
+        "RU": "Скрипт не существует. Введите правильный скрипт.",
+        "UA": "Скрипт не існує. Введіть правильний скрипт.",
+        "EN": "Script does not exist. Please enter a valid script."
+    },
     "": {
         "RU": "",
         "UA": "",
         "EN": ""
     }
 }
+
+interface LanguagesType {
+    [key: string]: {
+        [key: string]: string;
+    };
+}
+
+export default languages

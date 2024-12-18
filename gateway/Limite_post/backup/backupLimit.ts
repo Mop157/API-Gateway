@@ -1,14 +1,22 @@
-const { BACKUP_FILE } = require('../../config.json')
-const { redis } = require('../limite')
-const fs = require('fs');
+import fs from "fs";
 
-exports.backupRedisData = async () => {
-    const keys = await redis.keys('*');
-    const data = {};
+import { BACKUP_FILE } from "../../config.json";
+import redis from "../limite";
+
+interface datauser {
+    [key: string]: {
+        value: number,
+        ttl: number
+    }
+}
+
+export const backupRedisData = async (): Promise<void> => {
+    const keys: string[] = await redis.keys('*');
+    const data: datauser = {};
 
     for (const key of keys) {
-        const value = await redis.get(key);
-        const ttl = await redis.ttl(key);
+        const value: number = Number(await redis.get(key)) || 0
+        const ttl: number = await redis.ttl(key);
         data[key] = { value, ttl };
     }
 
@@ -16,12 +24,12 @@ exports.backupRedisData = async () => {
     console.log('Дані Redis успішно збережені в backup_limite.json');
 };
 
-exports.restoreRedisData = () => {
+export const restoreRedisData = (): void => {
     if (fs.existsSync(BACKUP_FILE)) {
         const data = JSON.parse(fs.readFileSync(BACKUP_FILE, 'utf-8'));
 
         for (const key in data) {
-            const { value, ttl } = data[key];
+            const { value, ttl }: {value: string, ttl: number} = data[key];
             redis.set(key, value);
             if (ttl > 0) {
                 redis.expire(key, ttl);

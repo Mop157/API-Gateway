@@ -10,8 +10,9 @@ class WhoisTool:
                 domain = domain.split('//')[1]
             
             result = python_whois.whois(domain)
-            print(result)
+            del result["whois_server"]
             return result
         except Exception as e:
             print(e)
             raise Exception(f"Whois ПОМИЛКА: {e}")
+        

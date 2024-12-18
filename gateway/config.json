@@ -7,8 +7,8 @@
     "BACKUP_FILE": "./Limite_post/backup/backup_limite.json",
 
     "URL_task": "http://localhost:4100",
-    "URL_cyber": "http://localhost:5000",
-    "URL_auth": "http://localhost:4200",
+    "URL_cyber": "http://127.0.0.1:5000",
+    "URL_auth": "http://localhost:3200",
 
-    "API-KEY-AI": ""
+    "API_KEY_AI": "api-key"
 }

@@ -1,19 +1,20 @@
-const Redis = require('ioredis');
-const redis = new Redis();
-// const Promise = require('bluebird')
-const Languages = require('../utils/Languag.json')
+import Redis from "ioredis";
 
-exports.rateLimiter = async (id, Language) => {
+import Languages from "../utils/Languages";
+
+const redis: Redis = new Redis();
+
+export const rateLimiter = async (id: number | undefined, Language: string): Promise<boolean> => {
     if (!id) {
         throw { error: Languages['user not found'][Language], status: 404 };
     }
 
-    const requestsKey = `rate_limit_${id}`;
-    const limit = 300; //  7 днів
-    const timeWindow = 7 * 24 * 60 * 60; // 7 днів в секундах
+    const requestsKey: string = `rate_limit_${id}`;
+    const limit: number = 300; //  300 на 7 днів
+    const timeWindow: number = 7 * 24 * 60 * 60; // 7 днів в секундах
 
     try {
-        const currentRequests = await redis.get(requestsKey);
+        const currentRequests: number = Number(await redis.get(requestsKey)) || 0
 
         if (currentRequests && currentRequests >= limit) {
             throw { 
@@ -28,10 +29,10 @@ exports.rateLimiter = async (id, Language) => {
             .exec();
 
         return true;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Помилка ліміту запитів:', error);
         throw { error: Languages['Server error checking request limit.'][Language], status: 500 };
     }
 };
 
-exports.redis = redis
+export default redis
