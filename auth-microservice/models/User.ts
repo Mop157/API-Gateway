@@ -44,7 +44,6 @@ export default class User {
             const user: user | undefined = await db.get("SELECT * FROM users WHERE username = ?", [username])
 
             if (!user) return null
-            console.log(user);
 
             const isMatch = await bcrypt.compare(password, user.password);
             return isMatch ? user : null

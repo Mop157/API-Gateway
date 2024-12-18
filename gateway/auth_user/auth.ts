@@ -83,6 +83,11 @@ export const loginUser = async (req: newRequest, res: Response): Promise<void> =
         return
     } catch (error: any) {
         if (error?.status) {
+            if (error.response) {
+                res.status(error.status).json({ error: error.response.data })
+                return
+            }
+            console.log(error.message, error.status)
             res.status(error.status).json({ error: Languages[error.message][Language]})
             return
 
@@ -123,6 +128,10 @@ export const registUser = async (req: newRequest, res: Response): Promise<void> 
     } catch (error: any) {
 
         if (error?.status) {
+            if (error.response) {
+                res.status(error.status).json({ error: error.response.data })
+                return
+            }
             res.status(error.status).json({ error: Languages[error.message][Language]})
             return
 
