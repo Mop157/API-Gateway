@@ -10,12 +10,12 @@ interface newRequest extends Request {
 export const auth = (req: newRequest, res: Response, next: NextFunction): void => {
     const token: string | undefined = req.headers['authorization'];
     if (!token) {
-        res.status(401).json({ message: 'Токен не надано' });
+        res.status(418).json({ message: 'Токен не надано' });
         return
     }
     const decoded: JwtPayload | null = verifyToken(token);
     if (!decoded) {
-        res.status(401).json({ message: 'Неправильний токен' });
+        res.status(418).json({ message: 'Неправильний токен' });
         return
     }
     req.user = decoded

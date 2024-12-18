@@ -65,7 +65,7 @@ export const Nmap = async (req: newRequest, res: Response): Promise<void> => {
             script = ""
         }: Nmap_req = req.body
 
-        if (!ip) throw new ValidationError(400, "Invalid IP address or domain")
+        if (!ip) throw new ValidationError(404, "Invalid IP address or domain")
 
         else if (!script) {
             const ports = list_port.split(',');

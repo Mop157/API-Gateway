@@ -14,7 +14,7 @@ export const AUTH = ((req: newRequest, res: Response, next: NextFunction): void 
     let Language: string = !Language_all.includes(headers) ? "EN" : headers
 
     if (!token) {
-        res.status(401).json({ 
+        res.status(404).json({ 
             message: Languages['Token not provided'][Language]
         })
         return

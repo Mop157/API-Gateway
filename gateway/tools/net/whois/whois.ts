@@ -1,7 +1,5 @@
-import axios from 'axios';
 import { Request, Response } from "express";
 
-import { datasave } from '../../../mongo/database';
 import { URL_cyber } from '../../../config.json';
 import Languages from '../../../utils/Languages';
 import { microserverRequest } from "../../../utils/axios_POST";
@@ -40,11 +38,11 @@ interface whois_res {
     }
 }
 
-interface whois_Error extends Error {
-    code: string
-    message: string
-    response: whois_res | undefined;
-}
+// interface whois_Error extends Error {
+//     code: string
+//     message: string
+//     response: whois_res | undefined;
+// }
 
 
 export const whois = async (req: newRequest, res: Response): Promise<void> => {
@@ -52,7 +50,7 @@ export const whois = async (req: newRequest, res: Response): Promise<void> => {
     try {
         let target: string | undefined = req?.body?.target
 
-        if (!target) throw new ValidationError(400, "Incorrect data in the request")
+        if (!target) throw new ValidationError(404, "Incorrect data in the request")
             
         await Promise.all([
             Validator.html(target),

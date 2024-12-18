@@ -29,65 +29,65 @@ export class ValidationError extends Error {
 export class Validator {
     static async html(target: string): Promise<void> {
         try {
-            if (sanitizeHtml(target) !== target) throw new ValidationError(400, ERROR_MESSAGES.INVALID_IP);
+            if (sanitizeHtml(target) !== target) throw new ValidationError(422, ERROR_MESSAGES.INVALID_IP);
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INVALID_IP);
+            throw new ValidationError(422, ERROR_MESSAGES.INVALID_IP);
         }
     }
 
     static async numbererror(number: number, min: number, max: number): Promise<void> {
         try {
-            if (!Number.isInteger(Number(number)) || number <= min || number >= max) throw new ValidationError(400, ERROR_MESSAGES.INVALID_NUMBER);
+            if (!Number.isInteger(Number(number)) || number <= min || number >= max) throw new ValidationError(422, ERROR_MESSAGES.INVALID_NUMBER);
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INVALID_NUMBER);
+            throw new ValidationError(415, ERROR_MESSAGES.INVALID_NUMBER);
         }
     }
 
     static async ipdomainerror(target: string): Promise<void> {
         try {
-            if (!(validator.isIP(target) || validator.isFQDN(target))) throw new ValidationError(400, ERROR_MESSAGES.INVALID_IP);
+            if (!(validator.isIP(target) || validator.isFQDN(target))) throw new ValidationError(422, ERROR_MESSAGES.INVALID_IP);
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INVALID_IP);
+            throw new ValidationError(422, ERROR_MESSAGES.INVALID_IP);
         }
     }
 
     static async portserror(ports: string[]): Promise<void> {
         try {
-            if (!ports.every(port => /^\d+$/.test(port) && Number(port) >= 0 && Number(port) <= 65535)) throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_PORTS);
+            if (!ports.every(port => /^\d+$/.test(port) && Number(port) >= 0 && Number(port) <= 65535)) throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_PORTS);
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_PORTS);
+            throw new ValidationError(415, ERROR_MESSAGES.INTERNAL_PORTS);
         }
     }
 
     static async duplicateportserror(ports: string[]): Promise<void> {
         try {
-            if ([...new Set(ports)].length !== ports.length) throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_DUPLICATE_PORTS);
+            if ([...new Set(ports)].length !== ports.length) throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_DUPLICATE_PORTS);
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_DUPLICATE_PORTS);
+            throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_DUPLICATE_PORTS);
         }
     }
 
     static async isArrayerrorerror(argument: string[]): Promise<void> {
         try {
-            if (!Array.isArray(argument)) throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_ISARRAY);
+            if (!Array.isArray(argument)) throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_ISARRAY);
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_ISARRAY);
+            throw new ValidationError(415, ERROR_MESSAGES.INTERNAL_ISARRAY);
         }
     }
 
     static async in_argumentserror(argument: string[]): Promise<void> {
         try {
-            if (!argument.every(args => arg.allowedArguments.includes(args))) throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_IN_ARGUMENTS);
+            if (!argument.every(args => arg.allowedArguments.includes(args))) throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_IN_ARGUMENTS);
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_IN_ARGUMENTS);
+            throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_IN_ARGUMENTS);
         }
     }
 
     static async duplicateargumenterror(argument: string[]): Promise<void> {
         try {
-            if ([...new Set(argument)].length !== argument.length) throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_DUPLICATE_ARGUMENTS);
+            if ([...new Set(argument)].length !== argument.length) throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_DUPLICATE_ARGUMENTS);
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_DUPLICATE_ARGUMENTS);
+            throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_DUPLICATE_ARGUMENTS);
         }
     }
 
@@ -95,22 +95,22 @@ export class Validator {
         try {
             if (email) {
                 if ((sanitizeHtml(name) !== name) || (sanitizeHtml(password) !== password) || (sanitizeHtml(email) !== email)) {
-                    throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_IN_DATA_REQUEST)
+                    throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_IN_DATA_REQUEST)
 
                 } else if ((validator.escape(name) !== name) || (validator.escape(password) !== password) || (validator.escape(email) !== email)) {
-                    throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_IN_DATA_REQUEST);
+                    throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_IN_DATA_REQUEST);
                 }
 
             } else {
                 if ((sanitizeHtml(name) !== name) || (sanitizeHtml(password) !== password)) {
-                    throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_IN_DATA_REQUEST)
+                    throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_IN_DATA_REQUEST)
 
                 } else if ((validator.escape(name) !== name) || (validator.escape(password) !== password)) {
-                    throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_IN_DATA_REQUEST);
+                    throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_IN_DATA_REQUEST);
                 }
             }
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_IN_DATA_REQUEST);
+            throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_IN_DATA_REQUEST);
         }
     }
 
@@ -125,25 +125,25 @@ export class Validator {
 
     static async passworderror(password: string): Promise<void> {
         try {
-            if (!/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_PASSWORD)
+            if (!/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_PASSWORD)
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_PASSWORD)
+            throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_PASSWORD)
         }
     }
 
     static async emailerror(email: string): Promise<void> {
         try {
-            if (!/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(email)) throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_EMAIL)
+            if (!/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(email)) throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_EMAIL)
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_EMAIL)
+            throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_EMAIL)
         }
     }
 
     static async usernamelengtherror(username: string): Promise<void> {
         try {
-            if (username.length < 4) throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_USERNAMELIMITE)
+            if (username.length < 4) throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_USERNAMELIMITE)
         } catch {
-            throw new ValidationError(400, ERROR_MESSAGES.INTERNAL_USERNAMELIMITE)
+            throw new ValidationError(422, ERROR_MESSAGES.INTERNAL_USERNAMELIMITE)
         }
     }
 }

@@ -28,7 +28,7 @@ export const ping = async (req: newRequest, res: Response): Promise<void> => {
     try {
         let { target, number }: ping_req = req.body
 
-        if (!target || !number) throw new ValidationError(400, "Incorrect data in the request")
+        if (!target || !number) throw new ValidationError(404, "Incorrect data in the request")
 
         await Promise.all([
             Validator.html(target),

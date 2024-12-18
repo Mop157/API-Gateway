@@ -65,7 +65,7 @@ export const loginUser = async (req: newRequest, res: Response): Promise<void> =
     try {
         const { username, password }: reqUser = req.body
 
-        if (!username || !password) throw new ValidationError(400, "Incorrect data in the request")
+        if (!username || !password) throw new ValidationError(404, "Incorrect data in the request")
 
         await Validator.usernloginerror(username, password)
 
@@ -79,7 +79,7 @@ export const loginUser = async (req: newRequest, res: Response): Promise<void> =
             }
         })
         
-        res.status(200).json(row.data)
+        res.status(row.status).json(row.data)
         return
     } catch (error: any) {
         if (error?.status) {
@@ -104,7 +104,7 @@ export const registUser = async (req: newRequest, res: Response): Promise<void> 
     try {
         const { username, email, password }: reqUser = req.body
 
-        if (!username || !password || !email) throw new ValidationError(400, "Incorrect data in the request")
+        if (!username || !password || !email) throw new ValidationError(404, "Incorrect data in the request")
 
         await Promise.all([
             Validator.usernloginerror(username, password, email),
@@ -123,7 +123,7 @@ export const registUser = async (req: newRequest, res: Response): Promise<void> 
                 'Content-Type': 'application/json'
             }
         })
-        res.status(200).json(row.data)
+        res.status(row.status).json(row.data)
 
     } catch (error: any) {
 
